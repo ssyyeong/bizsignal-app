@@ -19,28 +19,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final bool _isPasswordVisible = false;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-      await Future.delayed(const Duration(seconds: 2));
-      setState(() {
-        _isLoading = false;
-      });
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
-    }
   }
 
   //로그인 후 user 데이터 저장
@@ -55,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
           (value) async => {
             if (value['result'] != null)
               {
-                print(value),
                 prefs = await SharedPreferences.getInstance(),
                 await prefs.setString(
                   'token',
@@ -88,7 +72,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

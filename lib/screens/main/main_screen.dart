@@ -1,73 +1,113 @@
+import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class MainScreen extends StatelessWidget {
+import 'package:bizsignal_app/screens/main/home/home_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/my_page_screen.dart';
+
+class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainState();
+}
+
+class _MainState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  // 현재 선택된 탭 인덱스 관리할 변수
+  int _selectedIndex = 0;
+
+  final List<Widget> _widgetOptions = [
+    const HomeScreen(),
+    const MyPageScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: Colors.white,
+      body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
+      bottomNavigationBar: Container(
+        height: 62,
+
+        decoration: const BoxDecoration(color: Colors.white),
+        child: Row(
           children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4A90E2),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF4A90E2).withOpacity(0.3),
-                    blurRadius: 15,
-                    spreadRadius: 2,
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _onItemTapped(0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/navigator/home.svg',
+                        colorFilter: ColorFilter.mode(
+                          _selectedIndex == 0
+                              ? AppColors.gray900
+                              : AppColors.gray500,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '홈',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:
+                              _selectedIndex == 0
+                                  ? AppColors.gray900
+                                  : AppColors.gray500,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: const Icon(Icons.analytics, size: 50, color: Colors.white),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'BizSignal에 오신 것을 환영합니다!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF333333),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 15),
-            const Text(
-              '비즈니스 인사이트를 통해\n더 나은 의사결정을 내려보세요',
-              style: TextStyle(fontSize: 16, color: Color(0xFF666666)),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 50),
-            ElevatedButton(
-              onPressed: () {
-                // 여기에 다음 화면으로 이동하는 로직을 추가할 수 있습니다
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('기능이 준비 중입니다!'),
-                    backgroundColor: Color(0xFF4A90E2),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4A90E2),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              child: const Text(
-                '시작하기',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _onItemTapped(1),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/navigator/my_page.svg',
+                        colorFilter: ColorFilter.mode(
+                          _selectedIndex == 1 ? Colors.black : Colors.grey,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '마이페이지',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color:
+                              _selectedIndex == 1 ? Colors.black : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
