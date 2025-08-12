@@ -17,10 +17,11 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
-      child: const MaterialApp(home: MyApp()),
+      child: const MyApp(), // ✅ 바깥 MaterialApp 제거
     ),
   );
 }
@@ -36,11 +37,11 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       initialRoute: '/splash',
       routes: {
-        '/splash': (context) => const SplashScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/main': (context) => const MainScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/splash': (_) => const SplashScreen(),
+        '/login': (_) => const LoginScreen(),
+        '/register': (_) => const RegisterScreen(),
+        '/forgot_password': (_) => const ForgotPasswordScreen(),
+        '/main': (_) => const MainScreen(), // 바텀네비 들어있는 쉘
       },
     );
   }

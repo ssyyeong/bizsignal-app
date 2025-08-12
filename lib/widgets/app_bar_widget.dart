@@ -34,16 +34,19 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       centerTitle: true,
       leading:
           widget.isBackButton
-              ? Padding(
-                padding: const EdgeInsets.only(left: 16, top: 13, bottom: 13),
-                child: SvgPicture.asset(
-                  'assets/images/icon/arrow_back.svg',
-                  width: 24,
-                  height: 24,
+              ? GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 13, bottom: 13),
+                  child: SvgPicture.asset(
+                    'assets/images/icon/arrow_back.svg',
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               )
               : null,
-      leadingWidth: 48, 
+      leadingWidth: 48,
       backgroundColor: Colors.white,
       elevation: 0,
       iconTheme: const IconThemeData(color: Colors.black),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bizsignal_app/constants/app_colors.dart';
+import 'package:bizsignal_app/screens/main/meet/profile_card_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -33,27 +34,7 @@ class HomeScreen extends StatelessWidget {
                       width: 100,
                       height: 15,
                     ),
-                    Stack(
-                      children: [
-                        Icon(
-                          Icons.notifications_none_outlined,
-                          size: 24,
-                          color: AppColors.gray900,
-                        ),
-                        Positioned(
-                          top: 2,
-                          right: 2,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    SvgPicture.asset('assets/images/icon/bell_simple.svg'),
                   ],
                 ),
               ),
@@ -63,7 +44,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // 1:1 만남 섹션
-              _buildOneOnOneMeetingSection(),
+              _buildOneOnOneMeetingSection(context),
               const SizedBox(height: 24),
 
               // 비즈시그널 채널 섹션
@@ -167,7 +148,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOneOnOneMeetingSection() {
+  Widget _buildOneOnOneMeetingSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -229,15 +210,18 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          _buildProfileCardItem(hasProfileCard: false),
+          _buildProfileCardItem(hasProfileCard: false, context: context),
           const SizedBox(height: 12),
-          _buildProfileCardItem(hasProfileCard: true),
+          _buildProfileCardItem(hasProfileCard: true, context: context),
         ],
       ),
     );
   }
 
-  Widget _buildProfileCardItem({required bool hasProfileCard}) {
+  Widget _buildProfileCardItem({
+    required bool hasProfileCard,
+    required BuildContext context,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Row(
@@ -275,7 +259,14 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfileCardScreen(),
+                ),
+              );
+            },
             child: Container(
               width: 44,
               height: 28,

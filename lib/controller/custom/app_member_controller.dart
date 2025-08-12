@@ -25,9 +25,22 @@ class AppMemberController {
     modelName = modelName;
   }
 
+  // 환경에 따라 http/https 선택
+  Uri _buildUri(String path, [Map<String, String>? queryParameters]) {
+    final isDevelopment =
+        serverSettings.config!['apiUrl']!.contains('10.0.2.2') ||
+        serverSettings.config!['apiUrl']!.contains('localhost');
+
+    if (isDevelopment) {
+      return Uri.http(apiUrl!, path, queryParameters);
+    } else {
+      return Uri.https(apiUrl!, path, queryParameters);
+    }
+  }
+
   ///구글 로그인
   Future<Map<String, dynamic>> googleSignIn(Map option) async {
-    var url = Uri.https('$apiUrl', '$rootRoute/$role/$modelId/google_login');
+    var url = _buildUri('$rootRoute/$role/$modelId/google_login');
 
     final response = await http.post(url, body: option);
 
@@ -41,12 +54,9 @@ class AppMemberController {
   ///애플 로그인
   Future<Map<String, dynamic>> appleSignIn(Map option) async {
     final response = await http.post(
-      Uri.https('$apiUrl', '$rootRoute/$role/$modelId/apple_login'),
+      _buildUri('$rootRoute/$role/$modelId/apple_login'),
       body: option,
     );
-    // Uri url =
-    //     Uri.http('localhost:4021', '$rootRoute/$role/$modelId/apple_login');
-    // final response = await http.post(url, body: option);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseMap = json.decode(response.body);
@@ -57,10 +67,7 @@ class AppMemberController {
 
   ///FCM 토큰 업데이트
   Future<bool> updateFcmToken(Map option) async {
-    Uri url = Uri.https(
-      '$apiUrl',
-      '$rootRoute/$role/$modelId/update_fcm_token',
-    );
+    Uri url = _buildUri('$rootRoute/$role/$modelId/update_fcm_token');
 
     final response = await http.put(
       url,
@@ -73,8 +80,7 @@ class AppMemberController {
 
   ///기존 회원 아이디 체크
   Future<bool> doubleCheckUserName(Map option) async {
-    Uri url = Uri.http(
-      '10.0.2.2:4021',
+    Uri url = _buildUri(
       '$rootRoute/$role/$modelId/double_check_username',
       option.map((key, value) => MapEntry(key, value.toString())),
     );
@@ -90,10 +96,7 @@ class AppMemberController {
 
   ///회원가입
   Future<Map<String, dynamic>> signUp(Map option) async {
-    Uri url = Uri.http(
-      '10.0.2.2:4021',
-      '$rootRoute/$role/$modelId/sign_up/local',
-    );
+    Uri url = _buildUri('$rootRoute/$role/$modelId/sign_up/local');
 
     final response = await http.post(url, body: option);
 
@@ -106,12 +109,7 @@ class AppMemberController {
 
   ///로그인
   Future<Map<String, dynamic>> signIn(Map option) async {
-    // Uri url = Uri.https('$apiUrl', '$rootRoute/$role/$modelId/sign_in/local');
-
-    Uri url = Uri.http(
-      '10.0.2.2:4021',
-      '$rootRoute/$role/$modelId/sign_in/local',
-    );
+    Uri url = _buildUri('$rootRoute/$role/$modelId/sign_in/local');
 
     final response = await http.post(url, body: option);
 
@@ -126,11 +124,7 @@ class AppMemberController {
   Future<UserModel> getProfile(Map<dynamic, dynamic> option) async {
     var wrappedFindOption = {"JWT_PARSED_DATA": jsonEncode(option)};
 
-    Uri url = Uri.http(
-      '10.0.2.2:4021',
-      '$rootRoute/$role/$modelId/profile',
-      wrappedFindOption,
-    );
+    Uri url = _buildUri('$rootRoute/$role/$modelId/profile', wrappedFindOption);
 
     final response = await http.get(url);
 

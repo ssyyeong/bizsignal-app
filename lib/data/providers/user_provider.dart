@@ -5,6 +5,7 @@ import 'package:bizsignal_app/controller/custom/app_member_controller.dart';
 
 class UserProvider with ChangeNotifier {
   UserModel _user = UserModel();
+  UserModel get user => _user;
 
   void setUser(UserModel user) {
     _user = user;

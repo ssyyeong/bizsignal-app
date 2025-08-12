@@ -30,6 +30,19 @@ class ControllerBase {
     modelName = modelName;
   }
 
+  // 환경에 따라 http/https 선택
+  Uri _buildUri(String path, [Map<String, String>? queryParameters]) {
+    final isDevelopment =
+        serverSettings.config!['apiUrl']!.contains('10.0.2.2') ||
+        serverSettings.config!['apiUrl']!.contains('localhost');
+
+    if (isDevelopment) {
+      return Uri.http(apiUrl!, path, queryParameters);
+    } else {
+      return Uri.https(apiUrl!, path, queryParameters);
+    }
+  }
+
   parseResponse(Response response) {
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseMap = json.decode(response.body);
@@ -40,13 +53,8 @@ class ControllerBase {
   }
 
   Future<Map<String, dynamic>> getModelConfig() async {
-    // Uri url = Uri.http(
-    //   '$apiUrl',
-    //   '$rootRoute/common/model/find_one',
-    //   {'MODEL_NAME': modelName},
-    // );
-    Uri url = Uri.http('10.0.2.2:4021', '$rootRoute/common/model/find_one', {
-      'MODEL_NAME': modelName,
+    Uri url = _buildUri('$rootRoute/common/model/find_one', {
+      'MODEL_NAME': modelName ?? '',
     });
 
     final response = await http.get(url);
@@ -66,14 +74,10 @@ class ControllerBase {
 
     var wrappedFindOption = {"FIND_OPTION_KEY_LIST": jsonEncode(findOption)};
 
-    Uri url = Uri.https(
-      '$apiUrl',
+    Uri url = _buildUri(
       '$rootRoute/$role/$modelId/find_one',
       wrappedFindOption,
     );
-
-    // Uri url = Uri.http('10.0.2.2:4021', '$rootRoute/$role/$modelId/find_one',
-    //     wrappedFindOption);
 
     final response = await http.get(url);
 
@@ -91,14 +95,16 @@ class ControllerBase {
     modelConfig ??= await getModelConfig();
     var wrappedFindOption = {"FIND_OPTION_KEY_LIST": jsonEncode(option)};
 
-    Uri url = Uri.https(
-      '$apiUrl',
+    // Uri url = Uri.https(
+    //   '$apiUrl',
+    //   '$rootRoute/$role/$modelId/find_by_key',
+    //   wrappedFindOption,
+    // );
+
+    Uri url = _buildUri(
       '$rootRoute/$role/$modelId/find_by_key',
       wrappedFindOption,
     );
-
-    // Uri url = Uri.http('10.0.2.2:4021', '$rootRoute/$role/$modelId/find_by_key',
-    //     wrappedFindOption);
 
     final response = await http.get(url);
 
@@ -122,14 +128,10 @@ class ControllerBase {
 
     var wrappedFindOption = {"FIND_OPTION_KEY_LIST": jsonEncode(findOption)};
 
-    Uri url = Uri.http(
-      '10.0.2.2:4021',
+    Uri url = _buildUri(
       '$rootRoute/$role/$modelId/find_all',
       wrappedFindOption,
     );
-
-    // Uri url = Uri.https(
-    //     '$apiUrl', '$rootRoute/$role/$modelId/find_all', wrappedFindOption);
     print(url);
     final response = await http.get(url);
     print(response);
@@ -148,8 +150,7 @@ class ControllerBase {
     var findOption = option;
     var wrappedFindOption = {"FIND_OPTION_KEY_LIST": jsonEncode(findOption)};
 
-    Uri url = Uri.https(
-      '$apiUrl',
+    Uri url = _buildUri(
       '$rootRoute/$role/$modelId/find_all_by_joined_key',
       wrappedFindOption,
     );
@@ -188,8 +189,7 @@ class ControllerBase {
     };
 
     //todo: createOption에 user id 있는 경우 추가해주기
-    Uri url = Uri.https('$apiUrl', '$rootRoute/$role/$modelId/create');
-    // Uri url = Uri.http('10.0.2.2:4021', '$rootRoute/$role/$modelId/create');
+    Uri url = _buildUri('$rootRoute/$role/$modelId/create');
 
     final response = await http.post(url, body: wrappedCreateOption);
 
@@ -225,8 +225,7 @@ class ControllerBase {
       "UPDATE_OPTION_KEY_LIST": jsonEncode(updateOption),
     };
 
-    // Uri url = Uri.https('$apiUrl', '$rootRoute/$role/$modelId/update');
-    Uri url = Uri.https('$apiUrl', '$rootRoute/$role/$modelId/update');
+    Uri url = _buildUri('$rootRoute/$role/$modelId/update');
 
     final response = await http.put(url, body: wrappedOption);
 
@@ -262,7 +261,7 @@ class ControllerBase {
     };
 
     final response = await http.put(
-      Uri.https('$apiUrl', '$rootRoute/$role/$modelId/delete'),
+      _buildUri('$rootRoute/$role/$modelId/delete'),
       body: wrappedOption,
     );
 

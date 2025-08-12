@@ -9,6 +9,7 @@ class UserModel {
   String? region2; //지역2
   String? corporationYn; //법인 여부
   String? corporationDate; //법인 설립일
+  // String? companyIndustry; //사업 분야
   String? termsYn; //약관 동의 여부
   String? fcmToken; //FCM 토큰
 
@@ -23,6 +24,7 @@ class UserModel {
     this.region2,
     this.corporationYn,
     this.corporationDate,
+    // this.companyIndustry,
     this.termsYn,
     this.fcmToken,
   });
@@ -38,6 +40,7 @@ class UserModel {
     region2: json['REGION2'],
     corporationYn: json['CORPORATION_YN'],
     corporationDate: json['CORPORATION_DATE'],
+    // companyIndustry: json['MATCHING_INFO']['COMPANY_INDUSTRY'],
     termsYn: json['TERMS_YN'],
     fcmToken: json['FCM_TOKEN'],
   );

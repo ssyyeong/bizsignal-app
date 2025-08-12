@@ -5,7 +5,6 @@ import 'package:bizsignal_app/widgets/common_text_field.dart';
 import 'package:bizsignal_app/widgets/common_toggle_button.dart';
 import 'package:bizsignal_app/widgets/terms_agreement_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
@@ -29,11 +28,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _phoneController = TextEditingController();
   final _companyController = TextEditingController();
   final _itemController = TextEditingController();
-  // 휴대전화 입력 (이미지 스타일)
+  final _departmentController = TextEditingController();
+  // 휴대전화 입력
   final _phone1Controller = TextEditingController();
   final _phone2Controller = TextEditingController();
   final _phone3Controller = TextEditingController();
-
+  //설립일자
   final TextEditingController _dateController = TextEditingController();
 
   int _selectedTypeIndex = 0; // 0: 기업, 1: 기관
@@ -140,6 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'PHONE_NUMBER':
           '${_phone1Controller.text}${_phone2Controller.text}${_phone3Controller.text}',
       'COMPANY_NAME': _companyController.text,
+      'DEPARTMENT': _departmentController.text,
       'BUSINESS_ITEM': _itemController.text,
       'REGION': region,
       'REGION2': region2,
@@ -318,11 +319,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 18),
-                // 대표자명
+                // 대표자명 or 회원명
                 Row(
                   children: [
-                    const Text(
-                      '대표자명',
+                    Text(
+                      _selectedTypeIndex == 0 ? '대표자명' : '회원명',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
@@ -340,13 +341,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 CommonTextField(
                   controller: _ceoController,
-                  hintText: '10자 이내로 입력해주세요.',
+                  hintText:
+                      _selectedTypeIndex == 0
+                          ? '10자 이내로 입력해주세요.'
+                          : '50자 이내로 입력해주세요.',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '대표자명을 입력해주세요';
+                      return _selectedTypeIndex == 0
+                          ? '대표자명을 입력해주세요'
+                          : '회원명을 입력해주세요';
                     }
-                    if (value.length > 10) {
-                      return '10자 이내로 입력해주세요';
+                    if (value.length > (_selectedTypeIndex == 0 ? 10 : 50)) {
+                      return _selectedTypeIndex == 0
+                          ? '10자 이내로 입력해주세요'
+                          : '50자 이내로 입력해주세요';
                     }
                     return null;
                   },
@@ -526,11 +534,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // 기업명
+                //기업명 or 기관명
                 Row(
                   children: [
-                    const Text(
-                      '기업명',
+                    Text(
+                      _selectedTypeIndex == 0 ? '기업명' : '기관명',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
@@ -548,10 +556,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 CommonTextField(
                   controller: _companyController,
-                  hintText: '기업명을 입력해주세요',
+                  hintText:
+                      _selectedTypeIndex == 0 ? '기업명을 입력해주세요' : '기관명을 입력해주세요',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '기업명을 입력해주세요';
+                      return _selectedTypeIndex == 0
+                          ? '기업명을 입력해주세요'
+                          : '기관명을 입력해주세요';
                     }
                     if (value.length > 50) {
                       return '50자 이내로 입력해주세요';
@@ -560,6 +571,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 18),
+                // 기관 유형일 때만 담당 부서 표시
+                if (_selectedTypeIndex == 1) ...[
+                  // 담당 부서
+                  Row(
+                    children: [
+                      const Text(
+                        '담당 부서',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: AppColors.gray900,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      SvgPicture.asset(
+                        'assets/images/icon/required.svg',
+                        width: 12,
+                        height: 12,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  CommonTextField(
+                    controller: _departmentController,
+                    hintText: '50자 이내로 입력해주세요.',
+                    validator: (value) {
+                      if (_selectedTypeIndex == 1) {
+                        if (value == null || value.isEmpty) {
+                          return '담당 부서를 입력해주세요';
+                        }
+                        if (value.length > 50) {
+                          return '50자 이내로 입력해주세요.';
+                        }
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                ],
                 // 사업 아이템
                 Row(
                   children: [

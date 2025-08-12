@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // 로고
                   Center(
                     child: SvgPicture.asset(
-                      'assets/images/icon/logo/message.svg',
+                      'assets/images/logo/message.svg',
                       width: 110,
                       height: 110,
                     ),
