@@ -1,8 +1,10 @@
 import 'package:bizsignal_app/screens/main/chat/chat_screen.dart';
 import 'package:bizsignal_app/screens/main/class/class_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/pass/pass_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/pass/pass_shop_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/profile/change_password_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/profile/member_info_modify_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:bizsignal_app/constants/app_colors.dart';
@@ -13,7 +15,6 @@ import 'package:bizsignal_app/screens/main/my_page/profile/check_password_screen
 import 'package:bizsignal_app/screens/main/meet/meet_application_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_payment_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/profile_card_screen.dart';
-
 import 'package:bizsignal_app/screens/main/home/home_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_screen.dart';
 
@@ -277,12 +278,35 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
             builder: (_) => const CheckPasswordScreen(),
           );
         }
+        // 비밀번호 변경(/my_page/change_password)
+        if (settings.name == '/change_password') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/change_password'),
+            builder: (_) => const ChangePasswordScreen(),
+          );
+        }
 
         // 회원정보 수정(/my_page/member_info_modify)
         if (settings.name == '/member_info_modify') {
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/my_page/member_info_modify'),
             builder: (_) => const MemberInfoModifyScreen(),
+          );
+        }
+
+        // 이용패스(/my_page/pass)
+        if (settings.name == '/pass') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/pass'),
+            builder: (_) => const PassScreen(),
+          );
+        }
+
+        // 비즈시그널 패스샵(/my_page/pass_shop)
+        if (settings.name == '/pass_shop') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/pass_shop'),
+            builder: (_) => const PassShopScreen(),
           );
         }
 

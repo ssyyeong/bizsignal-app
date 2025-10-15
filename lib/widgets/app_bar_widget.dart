@@ -5,11 +5,13 @@ import 'package:flutter_svg/svg.dart';
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final bool isBackButton;
+  final Color? backgroundColor;
 
   const AppBarWidget({
     super.key,
     required this.title,
     required this.isBackButton,
+    this.backgroundColor,
   });
 
   @override
@@ -28,7 +30,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         style: TextStyle(
           color: AppColors.gray900,
           fontWeight: FontWeight.w500,
-          fontSize: 18,
+          fontSize: 16,
         ),
       ),
       centerTitle: true,
@@ -47,7 +49,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
               )
               : null,
       leadingWidth: 48,
-      backgroundColor: Colors.white,
+      backgroundColor: widget.backgroundColor ?? Colors.white,
       elevation: 0,
       iconTheme: const IconThemeData(color: Colors.black),
     );

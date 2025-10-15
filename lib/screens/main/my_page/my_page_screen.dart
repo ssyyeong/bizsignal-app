@@ -1,3 +1,4 @@
+import 'package:bizsignal_app/controller/base/controller_base.dart';
 import 'package:bizsignal_app/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,29 @@ class MyPageScreen extends StatefulWidget {
 }
 
 class _MyPageScreenState extends State<MyPageScreen> {
+  Map<dynamic, dynamic> entitlementData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  void _fetchData() async {
+    await ControllerBase(modelName: 'Entitlement', modelId: 'entitlement')
+        .findAll({
+          'APP_MEMBER_IDENTIFICATION_CODE':
+              context.read<UserProvider>().user.id,
+        })
+        .then((result) {
+          if (result['result']['rows'].isNotEmpty) {
+            setState(() {
+              entitlementData = result['result']['rows'][0];
+            });
+          }
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,69 +179,127 @@ class _MyPageScreenState extends State<MyPageScreen> {
   }
 
   Widget _buildUsagePass() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    // entitlementData가 있는지 확인
+    bool hasEntitlement = entitlementData.isNotEmpty;
+
+    if (hasEntitlement) {
+      // entitlementData가 있을 때: 이용패스 정보 표시
+      return GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, '/pass');
+        },
+
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '비즈시그널 이용패스',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.gray900,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      '비즈시그널 이용패스',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                    Text(
+                      ' 1개월',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 15,
+                      color: AppColors.primary,
+                    ),
+                  ],
                 ),
-                Text(
-                  ' 1개월',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
+                Container(
+                  height: 8,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: AppColors.gray200,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 15,
-                  color: AppColors.primary,
+                  child: FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: 0.7, // 70% 진행률
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-            Container(
-              height: 8,
-              width: 120,
-              decoration: BoxDecoration(
-                color: AppColors.gray200,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: 0.7, // 70% 진행률
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                Text(
+                  '25.07.01 ~ 25.07.31',
+                  style: TextStyle(fontSize: 12, color: AppColors.gray600),
                 ),
-              ),
+              ],
             ),
           ],
         ),
-        const SizedBox(height: 2),
-        Row(
+      );
+    } else {
+      // entitlementData가 없을 때: 보유 패스 없음 표시
+      return GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, '/pass');
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/icon/ticket.svg',
+                      width: 24,
+                      height: 24,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '보유 패스/이용권 없음',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                  ],
+                ),
+                SvgPicture.asset(
+                  'assets/images/icon/arrow_right.svg',
+                  width: 20,
+                  height: 20,
+                  color: AppColors.gray900,
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
             Text(
-              '25.07.01 ~ 25.07.31',
+              '비즈시그널 패스를 통해 의미있는 연결을 경험하세요!',
               style: TextStyle(fontSize: 12, color: AppColors.gray600),
             ),
           ],
         ),
-      ],
-    );
+      );
+    }
   }
 
   Widget _buildBusinessPartnershipBanner() {

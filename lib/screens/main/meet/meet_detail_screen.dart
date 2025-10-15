@@ -6,7 +6,6 @@ import 'package:bizsignal_app/screens/main/meet/meet_application_screen.dart';
 import 'package:bizsignal_app/widgets/app_bar_widget.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 class MeetDetailScreen extends StatefulWidget {
