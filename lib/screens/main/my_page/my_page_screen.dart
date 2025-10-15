@@ -85,20 +85,25 @@ class _MyPageScreenState extends State<MyPageScreen> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.asset(
-              'assets/images/profile_placeholder.png',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: AppColors.gray200,
-                  child: const Icon(
-                    Icons.person,
-                    size: 28,
-                    color: AppColors.gray400,
-                  ),
-                );
-              },
-            ),
+            child:
+                context.read<UserProvider>().user.profileImage != null
+                    ? Image.network(
+                      context.read<UserProvider>().user.profileImage ?? '',
+                    )
+                    : Image.asset(
+                      'assets/images/profile_placeholder.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: AppColors.gray200,
+                          child: const Icon(
+                            Icons.person,
+                            size: 28,
+                            color: AppColors.gray400,
+                          ),
+                        );
+                      },
+                    ),
           ),
         ),
         const SizedBox(width: 16),
@@ -107,8 +112,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '김소윤님',
+              Text(
+                context.read<UserProvider>().user.fullName ?? '',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -117,26 +122,31 @@ class _MyPageScreenState extends State<MyPageScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                '키뮤트(기업)',
+                context.read<UserProvider>().user.companyName ?? '',
                 style: TextStyle(fontSize: 13, color: AppColors.gray700),
               ),
             ],
           ),
         ),
         // 회원정보 수정 버튼
-        Container(
-          height: 28,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.gray200),
-          ),
-          child: const Text(
-            '회원정보 수정',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: AppColors.gray900,
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/check_password');
+          },
+          child: Container(
+            height: 28,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.gray200),
+            ),
+            child: const Text(
+              '회원정보 수정',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppColors.gray900,
+              ),
             ),
           ),
         ),
@@ -232,10 +242,10 @@ class _MyPageScreenState extends State<MyPageScreen> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // ✅ 2열 유지
-        crossAxisSpacing: 12, // 열 사이 여백(이미지 느낌)
-        mainAxisSpacing: 12, // 행 사이 여백(이미지 느낌)
-        childAspectRatio: 3.8, // ✅ 셀을 얇게(가로:세로). 3.5~4.2 사이로 취향 조절
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 3.8,
       ),
       itemCount: services.length,
       itemBuilder: (context, index) {

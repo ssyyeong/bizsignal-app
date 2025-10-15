@@ -1,5 +1,6 @@
 import 'package:bizsignal_app/screens/main/chat/chat_screen.dart';
 import 'package:bizsignal_app/screens/main/class/class_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/profile/member_info_modify_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,6 +9,7 @@ import 'package:bizsignal_app/constants/app_colors.dart';
 
 import 'package:bizsignal_app/screens/main/meet/meet_detail_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/my_page_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/profile/check_password_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_application_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_payment_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/profile_card_screen.dart';
@@ -260,6 +262,31 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
     return Navigator(
       key: _myKey,
       onGenerateRoute: (settings) {
+        // 기본 루트(/my_page)
+        if (settings.name == null || settings.name == '/') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page'),
+            builder: (_) => const MyPageScreen(),
+          );
+        }
+
+        // 비밀번호 확인(/my_page/check_password)
+        if (settings.name == '/check_password') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/check_password'),
+            builder: (_) => const CheckPasswordScreen(),
+          );
+        }
+
+        // 회원정보 수정(/my_page/member_info_modify)
+        if (settings.name == '/member_info_modify') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/member_info_modify'),
+            builder: (_) => const MemberInfoModifyScreen(),
+          );
+        }
+
+        // fallback
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/my_page'),
           builder: (_) => const MyPageScreen(),

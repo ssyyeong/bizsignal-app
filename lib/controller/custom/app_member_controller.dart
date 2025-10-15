@@ -136,4 +136,20 @@ class AppMemberController {
     }
     throw Exception('Failed to load data');
   }
+
+  //비밀번호 확인
+  Future<bool> checkPassword(Map option) async {
+    Uri url = _buildUri(
+      '$rootRoute/$role/$modelId/check_password',
+      option.map((key, value) => MapEntry(key, value.toString())),
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseMap = json.decode(response.body);
+      return responseMap['result'];
+    }
+    throw Exception('Failed to load data');
+  }
 }

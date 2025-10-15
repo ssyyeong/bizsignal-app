@@ -55,7 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     value['result']['signInResult']['accessToken'],
                   ),
                 if (mounted)
-                  {Navigator.pop(context), Navigator.pushNamed(context, '/')},
+                  {
+                    Navigator.pop(context),
+                    Navigator.pushNamed(context, '/main'),
+                  },
               }
             else
               {
