@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bizsignal_app/controller/base/controller_base.dart';
 import 'package:bizsignal_app/controller/custom/profile_card_controller.dart';
 import 'package:bizsignal_app/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class ProfileCardScreen extends StatefulWidget {
 }
 
 class _ProfileCardScreenState extends State<ProfileCardScreen> {
+  bool _isModify = false;
   bool _isMeetingEnabled = true;
   final List<String> _keywords = [
     '투자/자금 유치',
@@ -32,45 +34,99 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
     '부동산/공간',
     '오픈이노베이션/MOU',
   ];
-  final Set<String> _selectedKeywords = {'투자/자금 유치'};
+  final List<String> _selectedKeywords = [];
   final TextEditingController _introductionController = TextEditingController();
-
+  int? _profileCardId;
   XFile? img;
+  String? _profileImageUrl;
   final ImagePicker picker = ImagePicker();
 
-  Future getImage(ImageSource imageSource) async {
-    //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
-    final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    if (pickedFile != null) {
-      setState(() {
-        img = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
   }
 
-  void _saveProfileCard() async {
-    File image = (img != null) ? File(img!.path) : File('');
-
-    Map<String, dynamic> data = {
-      'APP_MEMBER_IDENTIFICATION_CODE': 1,
-      'MEETING_REQUEST_YN': _isMeetingEnabled ? 'Y' : 'N',
-      'KEYWORD_LIST': jsonEncode(_selectedKeywords.toList()),
-      'INTRODUCTION': _introductionController.text,
-    };
-
-    await ProfileCardController().profileCardUpload(data, image).then((result) {
-      if (result['status'] == 200) {
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
-      }
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchData();
   }
 
   @override
   void dispose() {
     _introductionController.dispose();
     super.dispose();
+  }
+
+  void _fetchData() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    try {
+      final result = await ControllerBase(
+        modelName: 'ProfileCard',
+        modelId: 'profile_card',
+      ).findAll({'APP_MEMBER_IDENTIFICATION_CODE': userProvider.user.id});
+
+      if (result['result']['rows'].isNotEmpty) {
+        _loadExistingProfileCard(result['result']['rows'][0]);
+      }
+    } catch (e) {
+      // 에러 처리
+      print('프로필카드 데이터 로드 실패: $e');
+    }
+  }
+
+  void _loadExistingProfileCard(Map<String, dynamic> data) {
+    setState(() {
+      _isModify = true;
+      _profileCardId = data['PROFILE_CARD_IDENTIFICATION_CODE'];
+      _isMeetingEnabled = data['MEETING_REQUEST_YN'] == 'Y';
+      _selectedKeywords.addAll(
+        List<String>.from(jsonDecode(data['KEYWORD_LIST'])),
+      );
+      _introductionController.text = data['INTRODUCTION'];
+      _profileImageUrl = jsonDecode(data['PROFILE_IMAGE'])[0];
+    });
+  }
+
+  Future<void> getImage(ImageSource imageSource) async {
+    final pickedFile = await picker.pickImage(source: imageSource);
+    if (pickedFile != null) {
+      setState(() {
+        img = pickedFile;
+      });
+    }
+  }
+
+  void _saveProfileCard() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final image = img != null ? File(img!.path) : File('');
+
+    final data = _buildProfileCardData(userProvider.user.id.toString());
+
+    final result =
+        _isModify
+            ? await ProfileCardController().profileCardUpdate(data, image)
+            : await ProfileCardController().profileCardUpload(data, image);
+
+    if (result['status'] == 200 && mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Map<String, dynamic> _buildProfileCardData(String userId) {
+    final data = {
+      'APP_MEMBER_IDENTIFICATION_CODE': userId,
+      'MEETING_REQUEST_YN': _isMeetingEnabled ? 'Y' : 'N',
+      'KEYWORD_LIST': jsonEncode(_selectedKeywords),
+      'INTRODUCTION': _introductionController.text,
+    };
+
+    if (_isModify && _profileCardId != null) {
+      data['PROFILE_CARD_IDENTIFICATION_CODE'] = _profileCardId.toString();
+    }
+
+    return data;
   }
 
   @override
@@ -132,9 +188,7 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _saveProfileCard();
-                    },
+                    onPressed: _saveProfileCard,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -291,39 +345,64 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
             style: TextStyle(fontSize: 12, color: AppColors.gray600),
           ),
           const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () {
-              getImage(ImageSource.gallery);
-            },
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                border: Border.all(color: AppColors.gray200),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child:
-                  img != null
-                      ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          File(img!.path),
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                      : const Icon(
-                        Icons.add,
-                        size: 24,
-                        color: AppColors.gray900,
-                      ),
-            ),
-          ),
+          _buildProfileImage(),
         ],
       ),
     );
+  }
+
+  Widget _buildProfileImage() {
+    return GestureDetector(
+      onTap: () => getImage(ImageSource.gallery),
+      child: Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          border: Border.all(color: AppColors.gray200),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: _getProfileImageWidget(),
+      ),
+    );
+  }
+
+  Widget _getProfileImageWidget() {
+    // 새로 선택한 이미지가 있으면 로컬 이미지 표시
+    if (img != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.file(
+          File(img!.path),
+          width: 80,
+          height: 80,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    // 서버에서 받은 이미지 URL이 있으면 네트워크 이미지 표시
+    if (_profileImageUrl != null && _profileImageUrl!.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          _profileImageUrl!,
+          width: 80,
+          height: 80,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildDefaultIcon();
+          },
+        ),
+      );
+    }
+
+    // 기본 아이콘 표시
+    return _buildDefaultIcon();
+  }
+
+  Widget _buildDefaultIcon() {
+    return const Icon(Icons.add, size: 24, color: AppColors.gray900);
   }
 
   Widget _buildKeywordsSection() {
@@ -356,7 +435,7 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
                     onTap: () {
                       setState(() {
                         if (isSelected) {
-                          _selectedKeywords.remove(keyword);
+                          _selectedKeywords.removeWhere((k) => k == keyword);
                         } else {
                           _selectedKeywords.add(keyword);
                         }

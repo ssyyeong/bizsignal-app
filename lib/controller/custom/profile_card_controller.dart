@@ -69,6 +69,38 @@ class ProfileCardController {
     ).create(option);
   }
 
+  Future<Map<String, dynamic>> profileCardUpdate(Map option, File img) async {
+    if (img.path != '') {
+      var request = http.MultipartRequest(
+        'POST',
+        _buildUri('$rootRoute/common/file/upload_image'),
+      );
+
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          "file",
+          img.readAsBytesSync(),
+          filename: img.path.split("/").last,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseMap = json.decode(response.body);
+        option['PROFILE_IMAGE'] = json.encode(responseMap['result']);
+      }
+    }
+    option['PROFILE_CARD_IDENTIFICATION_CODE'] =
+        option['PROFILE_CARD_IDENTIFICATION_CODE'];
+
+    return await ControllerBase(
+      modelName: 'ProfileCard',
+      modelId: 'profile_card',
+    ).update(option);
+  }
+
   Future<Map<String, dynamic>> filteringProfileCard(
     Map<dynamic, dynamic> option,
   ) async {

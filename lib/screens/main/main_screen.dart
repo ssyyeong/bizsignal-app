@@ -1,22 +1,26 @@
-import 'package:bizsignal_app/screens/main/chat/chat_screen.dart';
-import 'package:bizsignal_app/screens/main/class/class_screen.dart';
-import 'package:bizsignal_app/screens/main/my_page/pass/pass_screen.dart';
-import 'package:bizsignal_app/screens/main/my_page/pass/pass_shop_screen.dart';
-import 'package:bizsignal_app/screens/main/my_page/profile/change_password_screen.dart';
-import 'package:bizsignal_app/screens/main/my_page/profile/member_info_modify_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/support/notice_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:bizsignal_app/constants/app_colors.dart';
 
+import 'package:bizsignal_app/screens/main/home/home_screen.dart';
+import 'package:bizsignal_app/screens/main/chat/chat_screen.dart';
+import 'package:bizsignal_app/screens/main/class/class_screen.dart';
+
+import 'package:bizsignal_app/screens/main/meet/meet_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_detail_screen.dart';
-import 'package:bizsignal_app/screens/main/my_page/my_page_screen.dart';
-import 'package:bizsignal_app/screens/main/my_page/profile/check_password_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_application_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_payment_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/profile_card_screen.dart';
-import 'package:bizsignal_app/screens/main/home/home_screen.dart';
-import 'package:bizsignal_app/screens/main/meet/meet_screen.dart';
+
+import 'package:bizsignal_app/screens/main/my_page/my_page_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/profile/check_password_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/pass/pass_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/pass/pass_shop_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/profile/change_password_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/profile/member_info_modify_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/support/support_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -307,6 +311,36 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/my_page/pass_shop'),
             builder: (_) => const PassShopScreen(),
+          );
+        }
+
+        // 프로필 카드(/my_page/profile_card)
+        if (settings.name == '/profile_card') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/profile_card'),
+            builder: (_) => const ProfileCardScreen(),
+          );
+        }
+
+        // 고객센터(/support)
+        if (settings.name == '/support') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/support'),
+            builder: (_) => const SupportScreen(),
+          );
+        }
+
+        // 고객센터 공지사항 상세(/support/notice_detail)
+        if (settings.name == '/notice_detail') {
+          final noticeBoardContentId = settings.arguments as int;
+          return MaterialPageRoute(
+            settings: const RouteSettings(
+              name: '/my_page/support/notice_detail',
+            ),
+            builder:
+                (_) => NoticeDetailScreen(
+                  noticeBoardContentId: noticeBoardContentId,
+                ),
           );
         }
 

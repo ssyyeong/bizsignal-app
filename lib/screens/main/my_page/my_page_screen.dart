@@ -313,11 +313,19 @@ class _MyPageScreenState extends State<MyPageScreen> {
   Widget _buildServiceShortcuts() {
     final services = <Map<String, dynamic>>[
       {'icon': 'assets/images/my_page/calendar.svg', 'label': '비즈 캘린더'},
-      {'icon': 'assets/images/my_page/profile.svg', 'label': '프로필 카드 관리'},
+      {
+        'icon': 'assets/images/my_page/profile.svg',
+        'label': '프로필 카드 관리',
+        'route': '/profile_card',
+      },
       {'icon': 'assets/images/my_page/info.svg', 'label': '매칭 정보 관리'},
       {'icon': 'assets/images/my_page/voucher.svg', 'label': '혜택관리'},
       {'icon': 'assets/images/my_page/review.svg', 'label': '후기'},
-      {'icon': 'assets/images/my_page/headset.svg', 'label': '고객 센터'},
+      {
+        'icon': 'assets/images/my_page/headset.svg',
+        'label': '고객 센터',
+        'route': '/support',
+      },
     ];
 
     return GridView.builder(
@@ -338,7 +346,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: () {
-              // TODO: 각 항목별 이동 처리
+              Navigator.pushNamed(context, service['route'] as String);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
