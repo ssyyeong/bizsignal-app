@@ -5,6 +5,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:bizsignal_app/constants/app_colors.dart';
 
 import 'package:bizsignal_app/screens/main/home/home_screen.dart';
+import 'package:bizsignal_app/screens/main/home/introduce/class_introduce_screen.dart';
+import 'package:bizsignal_app/screens/main/home/introduce/meet_introduce_screen.dart';
+import 'package:bizsignal_app/screens/main/home/introduce/faq_introduce_screen.dart';
+
 import 'package:bizsignal_app/screens/main/chat/chat_screen.dart';
 import 'package:bizsignal_app/screens/main/class/class_screen.dart';
 
@@ -21,6 +25,7 @@ import 'package:bizsignal_app/screens/main/my_page/pass/pass_shop_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/profile/change_password_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/profile/member_info_modify_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/support/support_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/benefit/benefit_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -148,6 +153,33 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
     return Navigator(
       key: _homeKey,
       onGenerateRoute: (settings) {
+        if (settings.name == '/class_introduce') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const ClassIntroduceScreen(),
+          );
+        }
+        if (settings.name == '/meet_introduce') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const MeetIntroduceScreen(),
+          );
+        }
+
+        if (settings.name == '/faq_introduce') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const FaqIntroduceScreen(),
+          );
+        }
+
+        if (settings.name == '/support') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/support'),
+            builder: (_) => const SupportScreen(),
+          );
+        }
+
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const HomeScreen(),
@@ -319,6 +351,14 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/my_page/profile_card'),
             builder: (_) => const ProfileCardScreen(),
+          );
+        }
+
+        // 혜택 관리(/my_page/benefit)
+        if (settings.name == '/benefit') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/benefit'),
+            builder: (_) => const BenefitScreen(),
           );
         }
 

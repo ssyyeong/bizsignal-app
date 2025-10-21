@@ -132,9 +132,7 @@ class ControllerBase {
       '$rootRoute/$role/$modelId/find_all',
       wrappedFindOption,
     );
-    print(url);
     final response = await http.get(url);
-    print(response);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseMap = json.decode(response.body);

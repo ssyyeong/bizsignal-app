@@ -3,9 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/screens/main/meet/profile_card_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
   String _getNextThursday() {
     final now = DateTime.now();
     final daysUntilThursday = (DateTime.thursday - now.weekday) % 7;
@@ -324,48 +328,60 @@ class HomeScreen extends StatelessWidget {
         _buildChannelItem(
           icon: 'assets/images/icon/channel_class.svg',
           title: '매주 목요일 저녁, ${_getNextThursday()} \n사람들과의 오프라인 모임',
+          route: '/class_introduce',
         ),
         const SizedBox(height: 8),
         _buildChannelItem(
           icon: 'assets/images/icon/channel_meet.svg',
           title: '깊은 대화가 필요한 순간, \n1:1 만남',
+          route: '/meet_introduce',
         ),
         const SizedBox(height: 8),
         _buildChannelItem(
           icon: 'assets/images/icon/channel_use.svg',
           title: '비즈시그널, \n어떻게 이용하나요?',
+          route: '/faq_introduce',
         ),
       ],
     );
   }
 
-  Widget _buildChannelItem({required String icon, required String title}) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(icon, width: 28, height: 28),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: AppColors.gray800,
+  Widget _buildChannelItem({
+    required String icon,
+    required String title,
+    required String route,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, route);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            SvgPicture.asset(icon, width: 28, height: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.gray800,
+                ),
               ),
             ),
-          ),
-          SvgPicture.asset(
-            'assets/images/icon/arrow_right.svg',
-            width: 24,
-            height: 24,
-          ),
-        ],
+            SvgPicture.asset(
+              'assets/images/icon/arrow_right.svg',
+              width: 24,
+              height: 24,
+            ),
+          ],
+        ),
       ),
     );
   }

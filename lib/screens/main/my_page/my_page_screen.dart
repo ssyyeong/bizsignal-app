@@ -115,7 +115,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       context.read<UserProvider>().user.profileImage ?? '',
                     )
                     : Image.asset(
-                      'assets/images/profile_placeholder.png',
+                      'assets/images/my_page/profile.svg',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -319,7 +319,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
         'route': '/profile_card',
       },
       {'icon': 'assets/images/my_page/info.svg', 'label': '매칭 정보 관리'},
-      {'icon': 'assets/images/my_page/voucher.svg', 'label': '혜택관리'},
+      {
+        'icon': 'assets/images/my_page/voucher.svg',
+        'label': '혜택관리',
+        'route': '/benefit',
+      },
       {'icon': 'assets/images/my_page/review.svg', 'label': '후기'},
       {
         'icon': 'assets/images/my_page/headset.svg',
