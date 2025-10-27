@@ -318,7 +318,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
         'label': '프로필 카드 관리',
         'route': '/profile_card',
       },
-      {'icon': 'assets/images/my_page/info.svg', 'label': '매칭 정보 관리'},
+      {
+        'icon': 'assets/images/my_page/info.svg',
+        'label': '매칭 정보 관리',
+        'route': '/matching_info',
+      },
       {
         'icon': 'assets/images/my_page/voucher.svg',
         'label': '혜택관리',

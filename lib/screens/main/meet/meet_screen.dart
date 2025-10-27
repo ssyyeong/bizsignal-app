@@ -158,28 +158,12 @@ class _MeetScreenState extends State<MeetScreen> {
                         ),
                         filtering(),
                       },
-                  child: Container(
+                  child: SvgPicture.asset(
+                    showOnlyOfficialMentors
+                        ? 'assets/images/icon/check_orange.svg'
+                        : 'assets/images/icon/check_gray.svg',
                     width: 16,
                     height: 16,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color:
-                            showOnlyOfficialMentors
-                                ? AppColors.primary
-                                : AppColors.gray400,
-                        width: 2,
-                      ),
-                      color:
-                          showOnlyOfficialMentors
-                              ? AppColors.primary
-                              : AppColors.gray400,
-                    ),
-                    child: const Icon(
-                      Icons.check,
-                      size: 12,
-                      color: AppColors.white,
-                    ),
                   ),
                 ),
                 const SizedBox(width: 8),

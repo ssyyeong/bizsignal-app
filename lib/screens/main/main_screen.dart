@@ -10,7 +10,15 @@ import 'package:bizsignal_app/screens/main/home/introduce/meet_introduce_screen.
 import 'package:bizsignal_app/screens/main/home/introduce/faq_introduce_screen.dart';
 
 import 'package:bizsignal_app/screens/main/chat/chat_screen.dart';
+
 import 'package:bizsignal_app/screens/main/class/class_screen.dart';
+import 'package:bizsignal_app/screens/main/class/matching/matching_info_screen.dart';
+import 'package:bizsignal_app/screens/main/class/matching/matching_region_selection_screen.dart';
+import 'package:bizsignal_app/screens/main/class/matching/matching_business_item_selection_screen.dart';
+import 'package:bizsignal_app/screens/main/class/matching/matching_interest_area_selection_screen.dart';
+import 'package:bizsignal_app/screens/main/class/matching/matching_purpose_selection_screen.dart';
+import 'package:bizsignal_app/screens/main/class/matching/matching_introduction_screen.dart';
+import 'package:bizsignal_app/screens/main/class/matching/matching_complete_screen.dart';
 
 import 'package:bizsignal_app/screens/main/meet/meet_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_detail_screen.dart';
@@ -36,7 +44,7 @@ class MainScreen extends StatefulWidget {
 class _MainState extends State<MainScreen> with WidgetsBindingObserver {
   final _homeKey = GlobalKey<NavigatorState>();
   final _meetKey = GlobalKey<NavigatorState>();
-  final _gatheringKey = GlobalKey<NavigatorState>();
+  final _classKey = GlobalKey<NavigatorState>();
   final _chatKey = GlobalKey<NavigatorState>();
   final _myKey = GlobalKey<NavigatorState>();
 
@@ -48,7 +56,7 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
         [
           _homeKey,
           _meetKey,
-          _gatheringKey,
+          _classKey,
           _chatKey,
           _myKey,
         ][_selectedIndex].currentState!;
@@ -66,7 +74,7 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           [
             _homeKey,
             _meetKey,
-            _gatheringKey,
+            _classKey,
             _chatKey,
             _myKey,
           ][index].currentState!;
@@ -88,7 +96,7 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
             children: [
               _buildHomeStack(),
               _buildMeetStack(), // ✅ /meet, /meet/detail/:id, /meet/application ...
-              _buildGatheringStack(),
+              _buildClassStack(),
               _buildChatStack(),
               _buildMyStack(),
             ],
@@ -147,12 +155,27 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
     );
   }
 
-  // ===== 각 탭 스택 =====
-
   Widget _buildHomeStack() {
     return Navigator(
       key: _homeKey,
       onGenerateRoute: (settings) {
+        if (settings.name == '/class') {
+          // 탭 변경하고 Navigate
+          Future.microtask(() {
+            setState(() => _selectedIndex = 2); // 모임 탭으로 변경
+            _classKey.currentState?.pushReplacementNamed(
+              '/class',
+              arguments: settings.arguments,
+            );
+          });
+
+          final tabIndex = settings.arguments as int?;
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => ClassScreen(initialTabIndex: tabIndex),
+          );
+        }
+
         if (settings.name == '/class_introduce') {
           return MaterialPageRoute(
             settings: settings,
@@ -177,6 +200,30 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/my_page/support'),
             builder: (_) => const SupportScreen(),
+          );
+        }
+
+        if (settings.name == '/class') {
+          // 탭을 모임으로 변경
+          Future.microtask(() {
+            setState(() => _selectedIndex = 2); // 모임 탭으로 변경
+            _classKey.currentState?.pushNamed('/class');
+          });
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const ClassScreen(),
+          );
+        }
+        if (settings.name == '/matching_info') {
+          // 탭을 모임으로 변경
+          Future.microtask(() {
+            setState(() => _selectedIndex = 2); // 모임 탭으로 변경
+            _classKey.currentState?.pushNamed('/matching_info');
+          });
+
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const MatchingInfoScreen(),
           );
         }
 
@@ -271,13 +318,80 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildGatheringStack() {
+  Widget _buildClassStack() {
     return Navigator(
-      key: _gatheringKey,
+      key: _classKey,
       onGenerateRoute: (settings) {
+        if (settings.name == '/matching_info') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const MatchingInfoScreen(),
+          );
+        }
+
+        if (settings.name == '/matching_region_selection') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const MatchingRegionSelectionScreen(),
+          );
+        }
+
+        if (settings.name == '/matching_business_item_selection') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder:
+                (_) => MatchingBusinessItemSelectionScreen(
+                  selectedRegions: settings.arguments as Set<String>,
+                ),
+          );
+        }
+
+        if (settings.name == '/matching_interest_area_selection') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder:
+                (_) => MatchingInterestAreaSelectionScreen(
+                  selectedRegions: settings.arguments as Set<String>,
+                  selectedBusinessItems: settings.arguments as Set<String>,
+                ),
+          );
+        }
+
+        if (settings.name == '/matching_purpose_selection') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder:
+                (_) => MatchingPurposeSelectionScreen(
+                  selectedRegions: settings.arguments as Set<String>,
+                  selectedBusinessItems: settings.arguments as Set<String>,
+                  selectedInterestAreas: settings.arguments as Set<String>,
+                ),
+          );
+        }
+        if (settings.name == '/matching_introduction') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder:
+                (_) => MatchingIntroductionScreen(
+                  selectedRegions: settings.arguments as Set<String>,
+                  selectedBusinessItems: settings.arguments as Set<String>,
+                  selectedInterestAreas: settings.arguments as Set<String>,
+                  selectedPurposes: settings.arguments as Set<String>,
+                ),
+          );
+        }
+        if (settings.name == '/matching_complete') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const MatchingCompleteScreen(),
+          );
+        }
+        // 탭 인덱스를 arguments에서 가져오기
+        final tabIndex = settings.arguments as int?;
+
         return MaterialPageRoute(
-          settings: const RouteSettings(name: '/gathering'),
-          builder: (_) => const ClassScreen(),
+          settings: const RouteSettings(name: '/class'),
+          builder: (_) => ClassScreen(initialTabIndex: tabIndex),
         );
       },
     );
@@ -381,6 +495,13 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
                 (_) => NoticeDetailScreen(
                   noticeBoardContentId: noticeBoardContentId,
                 ),
+          );
+        }
+
+        if (settings.name == '/matching_info') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const MatchingInfoScreen(),
           );
         }
 

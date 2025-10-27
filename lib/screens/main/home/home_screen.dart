@@ -1,7 +1,10 @@
+import 'package:bizsignal_app/controller/base/controller_base.dart';
+import 'package:bizsignal_app/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/screens/main/meet/profile_card_screen.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +18,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final daysUntilThursday = (DateTime.thursday - now.weekday) % 7;
     final nextThursday = now.add(Duration(days: daysUntilThursday));
     return '${nextThursday.month}월 ${nextThursday.day}일';
+  }
+
+  Future<bool> hasMatchingInfo() async {
+    try {
+      final result = await ControllerBase(
+        modelName: 'ClassMatchingInfo',
+        modelId: 'class_matching_info',
+      ).findAll({
+        'APP_MEMBER_IDENTIFICATION_CODE': context.read<UserProvider>().user.id,
+      });
+
+      return result['result']['rows'].length > 0;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -114,18 +132,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: _buildCategoryItem(
                   icon: 'assets/images/icon/map.svg',
                   title: '희망 지역별',
+                  index: 0,
                 ),
               ),
               Expanded(
                 child: _buildCategoryItem(
                   icon: 'assets/images/icon/like.svg',
                   title: '관심사별',
+                  index: 1,
                 ),
               ),
               Expanded(
                 child: _buildCategoryItem(
                   icon: 'assets/images/icon/document.svg',
                   title: '사업 분야별',
+                  index: 2,
                 ),
               ),
             ],
@@ -135,20 +156,34 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCategoryItem({required String icon, required String title}) {
-    return Column(
-      children: [
-        SvgPicture.asset(icon, width: 32, height: 32),
-        const SizedBox(height: 16),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: AppColors.gray800,
+  Widget _buildCategoryItem({
+    required String icon,
+    required String title,
+    required int index,
+  }) {
+    return GestureDetector(
+      onTap: () async {
+        final hasInfo = await hasMatchingInfo();
+        if (!hasInfo) {
+          Navigator.pushNamed(context, '/matching_info');
+        } else {
+          Navigator.pushNamed(context, '/class', arguments: index);
+        }
+      },
+      child: Column(
+        children: [
+          SvgPicture.asset(icon, width: 32, height: 32),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.gray800,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
