@@ -9,6 +9,7 @@ class ProfileCard extends StatelessWidget {
   final String introduction;
   final List<dynamic> keywordList;
   final bool isOfficialMentor;
+  final bool isRequested;
   final VoidCallback? goToProfileDetail;
 
   const ProfileCard({
@@ -19,6 +20,7 @@ class ProfileCard extends StatelessWidget {
     required this.introduction,
     required this.keywordList,
     this.isOfficialMentor = false,
+    this.isRequested = false,
     this.goToProfileDetail,
   });
 
@@ -256,10 +258,10 @@ class ProfileCard extends StatelessWidget {
       width: 80,
       height: 28,
       child: ElevatedButton(
-        onPressed: goToProfileDetail,
+        onPressed: isRequested ? () => {} : goToProfileDetail,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.white,
+          backgroundColor: isRequested ? AppColors.gray300 : AppColors.primary,
+          foregroundColor: isRequested ? AppColors.gray700 : AppColors.white,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 0,
@@ -268,9 +270,9 @@ class ProfileCard extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Text(
-              '만남신청',
+              isRequested ? '신청완료' : '만남신청',
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
             ),
           ],

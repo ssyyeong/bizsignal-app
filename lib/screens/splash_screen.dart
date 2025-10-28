@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/screens/auth/login_screen.dart';
 import 'package:bizsignal_app/screens/main/main_screen.dart';
+import 'package:bizsignal_app/data/providers/user_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,11 +33,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (mounted) {
       if (token != '') {
-        // 로그인 상태라면 홈 화면으로 이동
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
+        // 로그인 상태라면 사용자 정보를 불러온 후 홈 화면으로 이동
+        try {
+          await context.read<UserProvider>().getUser(token);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+          );
+        } catch (e) {
+          // 사용자 정보 불러오기 실패 시 로그인 화면으로 이동
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
       } else {
         // 로그인 상태가 아니라면 로그인 화면으로 이동
         Navigator.pushReplacement(

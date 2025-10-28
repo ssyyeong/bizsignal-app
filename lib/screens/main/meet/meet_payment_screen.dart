@@ -86,7 +86,7 @@ class _MeetPaymentScreenState extends State<MeetPaymentScreen> {
                       Text(
                         NumberFormat(
                           '#,###',
-                        ).format(widget.profileData['TICKE_PRICE'] ?? 0),
+                        ).format(widget.profileData['TICKET_PRICE'] ?? 0),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,

@@ -247,7 +247,6 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
             settings: const RouteSettings(name: '/meet'),
             builder:
                 (_) => MeetScreen(
-                  // 예: 리스트 아이템 탭 시 상세로 이동하기 위한 콜백
                   onOpenDetail: (String profileCardId) {
                     _meetKey.currentState!.pushNamed(
                       '/detail',

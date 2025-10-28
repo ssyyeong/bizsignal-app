@@ -17,7 +17,10 @@ class UserProvider with ChangeNotifier {
 
     String userId = prefs.getString('userId') ?? '';
     if (userId != '') {
-      prefs.setString('fcmToken', fcm);
+      // FCM 토큰이 제공된 경우에만 저장
+      if (fcm != null && fcm.isNotEmpty) {
+        prefs.setString('fcmToken', fcm);
+      }
 
       Map<dynamic, dynamic> option = {'APP_MEMBER_IDENTIFICATION_CODE': userId};
       _user = await AppMemberController().getProfile(option);
@@ -26,6 +29,9 @@ class UserProvider with ChangeNotifier {
     } else {
       _user = UserModel();
     }
+
+    // UI 업데이트를 위해 notifyListeners 호출
+    notifyListeners();
     return _user;
   }
 }

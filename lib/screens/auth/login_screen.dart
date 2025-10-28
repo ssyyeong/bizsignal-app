@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 if (mounted)
                   await context.read<UserProvider>().getUser(
-                    value['result']['signInResult']['accessToken'],
+                    '', // FCM 토큰은 별도로 설정되므로 빈 문자열 전달
                   ),
                 if (mounted)
                   {

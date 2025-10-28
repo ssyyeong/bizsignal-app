@@ -33,6 +33,7 @@ class AlertModalWidget extends StatelessWidget {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
@@ -41,24 +42,20 @@ class AlertModalWidget extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: AppColors.gray900,
               ),
-              textAlign: TextAlign.start,
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 30),
 
             // 본문 텍스트들
             ...bodyTexts.map(
-              (text) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.gray600,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.start,
+              (text) => Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.gray600,
+                  fontWeight: FontWeight.w500,
                 ),
+                textAlign: TextAlign.start,
               ),
             ),
             const SizedBox(height: 16),

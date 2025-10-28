@@ -10,6 +10,7 @@ import 'package:bizsignal_app/widgets/app_bar_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MeetApplicationScreen extends StatefulWidget {
@@ -33,9 +34,7 @@ class _MeetApplicationScreenState extends State<MeetApplicationScreen> {
 
   void _fetchData() async {
     await ControllerBase(modelName: 'ProfileCard', modelId: 'profile_card')
-        .findOneByKey({
-          'PROFILE_CARD_IDENTIFICATION_CODE': widget.profileCardId,
-        })
+        .findOne({'PROFILE_CARD_IDENTIFICATION_CODE': widget.profileCardId})
         .then((result) {
           setState(() {
             profileData = result['result'];
@@ -45,44 +44,35 @@ class _MeetApplicationScreenState extends State<MeetApplicationScreen> {
   }
 
   void applyMeet() {
-    // Map<String, dynamic> data = {
-    //   'REQUESTER_MEMBER_IDENTIFICATION_CODE':
-    //       profileData['AppMember']?['APP_MEMBER_IDENTIFICATION_CODE'] ??
-    //       profileData['AppMember']?['APP_MEMBER_IDENTIFICATION_CODE'] ??
-    //       0,
-    //   'RECEIVER_MEMBER_IDENTIFICATION_CODE': 1,
-    //   'MESSAGE': greetingController.text,
-    //   'ACCEPT_YN': 'WAIT',
-    //   'CHANNEL': 'FREE',
-    // };
-
-    // ControllerBase(
-    //   modelName: 'MeetingRequest',
-    //   modelId: 'meeting_request',
-    // ).create(data).then((result) {
-    //   print(result);
-    //   if (result['result'] != null) {
-    //     // 결제 완료 후 모달 표시
-    //     if (mounted) {}
-    //   }
-    // });
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder:
-          (context) => AlertModalFactory.meetingApplicationComplete(
-            context: context,
-            onConfirm: () {
-              Navigator.of(context).pop(); // 모달 닫기
-              // 만남 탭으로 이동 (MainScreen의 _onItemTapped 방식 사용)
-              // 만남 탭으로 이동하면서 MainScreen 유지
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const MainScreen()),
-                (route) => false,
-              );
-            },
-          ),
-    );
+    Map<String, dynamic> data = {
+      'REQUESTER_MEMBER_IDENTIFICATION_CODE':
+          context.read<UserProvider>().user.id,
+      'RECEIVER_MEMBER_IDENTIFICATION_CODE':
+          profileData['APP_MEMBER_IDENTIFICATION_CODE'],
+      'MESSAGE': greetingController.text,
+      'ACCEPT_YN': 'WAIT',
+      'CHANNEL': 'FREE',
+    };
+    ControllerBase(
+      modelName: 'MeetingRequest',
+      modelId: 'meeting_request',
+    ).create(data).then((result) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (context) => AlertModalFactory.meetingApplicationComplete(
+              context: context,
+              onConfirm: () {
+                Navigator.of(context).pop(); // 모달 닫기
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                  (route) => false,
+                );
+              },
+            ),
+      );
+    });
   }
 
   @override
@@ -277,40 +267,44 @@ class _MeetApplicationScreenState extends State<MeetApplicationScreen> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 만남 대화 주제 섹션
-                          const Text(
-                            '만남 대화 주제',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.gray900,
-                            ),
+                  ],
+                  SizedBox(height: 24),
+                  // 만남 대화 주제 섹션 (모든 경우에 표시)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '만남 대화 주제',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.gray900,
                           ),
-                          const SizedBox(height: 16),
-                          Wrap(
-                            spacing: 4,
-                            runSpacing: 4,
-                            children:
-                                profileData['KEYWORD_LIST'] != null
-                                    ? (jsonDecode(profileData['KEYWORD_LIST'])
-                                            as List<dynamic>)
-                                        .map(
-                                          (keyword) =>
-                                              _buildTag(keyword.toString()),
-                                        )
-                                        .toList()
-                                    : [],
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          children:
+                              profileData['KEYWORD_LIST'] != null
+                                  ? (jsonDecode(profileData['KEYWORD_LIST'])
+                                          as List<dynamic>)
+                                      .map(
+                                        (keyword) =>
+                                            _buildTag(keyword.toString()),
+                                      )
+                                      .toList()
+                                  : [],
+                        ),
+                      ],
                     ),
+                  ),
+
+                  // 신청 안내 섹션 (공식 멘토일 때만)
+                  if (isOfficialMentor) ...[
                     const SizedBox(height: 32),
-                    // 신청 안내 섹션 (공식 멘토일 때만)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
@@ -344,11 +338,12 @@ class _MeetApplicationScreenState extends State<MeetApplicationScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '${profileData['TICKE_PRICE'] ?? 0}',
+                                  NumberFormat(
+                                    '#,###',
+                                  ).format(profileData['TICKET_PRICE'] ?? 0),
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: AppColors.gray900,
-                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.gray700,
                                   ),
                                 ),
                               ],
@@ -377,7 +372,7 @@ class _MeetApplicationScreenState extends State<MeetApplicationScreen> {
                             color: AppColors.gray900,
                           ),
                         ),
-                        const SizedBox(height: 16),
+
                         // 인사말 안내 텍스트
                         Text(
                           isOfficialMentor

@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:bizsignal_app/controller/custom/profile_card_controller.dart';
+import 'package:bizsignal_app/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../constants/app_colors.dart';
 import '../../../widgets/profile_card_widget.dart';
@@ -282,7 +284,11 @@ class _MeetScreenState extends State<MeetScreen> {
       itemBuilder: (context, index) {
         final profile = profileData[index];
         final idStr = profile['PROFILE_CARD_IDENTIFICATION_CODE'].toString();
-        final idInt = int.tryParse(idStr) ?? 0;
+        final isRequested = profile['MEETING_REQUEST'].any(
+          (element) =>
+              element['REQUESTER_MEMBER_IDENTIFICATION_CODE'] ==
+              context.read<UserProvider>().user.id,
+        );
 
         return ProfileCard(
           name: profile['AppMember']['FULL_NAME'],
@@ -291,6 +297,7 @@ class _MeetScreenState extends State<MeetScreen> {
           introduction: profile['INTRODUCTION'],
           keywordList: jsonDecode(profile['KEYWORD_LIST']),
           isOfficialMentor: profile['OFFICIAL_MENTOR_YN'] == 'Y',
+          isRequested: isRequested,
           // ✅ 상세 이동: 콜백 사용 (탭-Navigator로 push)
           goToProfileDetail: () => widget.onOpenDetail(idStr),
         );
