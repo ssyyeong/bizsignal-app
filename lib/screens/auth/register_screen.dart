@@ -4,6 +4,7 @@ import 'package:bizsignal_app/screens/auth/login_screen.dart';
 import 'package:bizsignal_app/widgets/common_text_field.dart';
 import 'package:bizsignal_app/widgets/common_toggle_button.dart';
 import 'package:bizsignal_app/widgets/terms_agreement_bottom_sheet.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -121,10 +122,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     AppMemberController().doubleCheckUserName(option).then((value) {
       if (!value && mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('이미 사용중인 이메일입니다.')));
-      } else {
+        ToastWidget.showError(context, message: '이미 사용중인 이메일입니다.');
+      } else if (mounted) {
         signUp();
       }
     });
@@ -156,9 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           (value) => {
             if (mounted)
               {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('회원가입이 완료되었습니다.'))),
+                ToastWidget.showInfo(context, message: '회원가입이 완료되었습니다.'),
                 //로그인 화면으로 이동
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -935,17 +932,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (_formKey.currentState!.validate() && _agree) {
                         signUp();
                       } else if (!_agree) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '서비스 이용 동의는 필수입니다.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            backgroundColor: AppColors.alertWarning,
-                          ),
+                        ToastWidget.showError(
+                          context,
+                          message: '서비스 이용 동의는 필수입니다.',
                         );
                       }
                     },

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bizsignal_app/widgets/primary_button.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:bizsignal_app/widgets/app_bar_widget.dart';
@@ -75,17 +76,13 @@ class _MatchingInfoScreenState extends State<MatchingInfoScreen> {
         })
         .then((result) {
           if (hasData) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('매칭 정보 적용이 완료되었습니다.')));
+            ToastWidget.showInfo(context, message: '매칭 정보 적용이 완료되었습니다.');
             Navigator.pushNamed(context, '/my_page');
           }
           Navigator.pushNamed(context, '/matching_complete');
         })
         .catchError((error) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('매칭 정보 적용에 실패했습니다.')));
+          ToastWidget.showError(context, message: '매칭 정보 적용에 실패했습니다.');
         });
   }
 

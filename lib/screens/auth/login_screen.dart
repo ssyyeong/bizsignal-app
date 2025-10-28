@@ -1,3 +1,4 @@
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,9 +64,12 @@ class _LoginScreenState extends State<LoginScreen> {
             else
               {
                 if (mounted)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('아이디 또는 비밀번호가 일치하지 않습니다.')),
-                  ),
+                  {
+                    ToastWidget.showError(
+                      context,
+                      message: '아이디 또는 비밀번호가 일치하지 않습니다.',
+                    ),
+                  },
               },
           },
         );

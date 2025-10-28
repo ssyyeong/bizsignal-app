@@ -19,6 +19,8 @@ import 'package:bizsignal_app/screens/main/class/matching/matching_interest_area
 import 'package:bizsignal_app/screens/main/class/matching/matching_purpose_selection_screen.dart';
 import 'package:bizsignal_app/screens/main/class/matching/matching_introduction_screen.dart';
 import 'package:bizsignal_app/screens/main/class/matching/matching_complete_screen.dart';
+import 'package:bizsignal_app/screens/main/class/class_create_screen.dart';
+import 'package:bizsignal_app/screens/main/class/class_detail_screen.dart';
 
 import 'package:bizsignal_app/screens/main/meet/meet_screen.dart';
 import 'package:bizsignal_app/screens/main/meet/meet_detail_screen.dart';
@@ -249,7 +251,10 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
                   onOpenDetail: (String profileCardId) {
                     _meetKey.currentState!.pushNamed(
                       '/detail',
-                      arguments: profileCardId,
+                      arguments: {
+                        'profileCardId': profileCardId,
+                        'isMeeting': true,
+                      },
                     );
                   },
                   onOpenApplication: (int profileCardId) {
@@ -267,10 +272,22 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
 
         // 상세(/meet/detail/:id)
         if (settings.name == '/detail') {
-          final id = settings.arguments?.toString() ?? '';
+          final args = settings.arguments;
+          String id = '';
+          bool isMeeting = true;
+
+          if (args is Map<String, dynamic>) {
+            id = args['profileCardId']?.toString() ?? '';
+            isMeeting = args['isMeeting'] ?? true;
+          } else {
+            id = args?.toString() ?? '';
+          }
+
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/meet/detail'),
-            builder: (_) => MeetDetailScreen(profileCardId: id),
+            builder:
+                (_) =>
+                    MeetDetailScreen(profileCardId: id, isMeeting: isMeeting),
           );
         }
 
@@ -384,6 +401,22 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           return MaterialPageRoute(
             settings: settings,
             builder: (_) => const MatchingCompleteScreen(),
+          );
+        }
+
+        if (settings.name == '/class_create') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => const ClassCreateScreen(),
+          );
+        }
+
+        if (settings.name == '/class_detail') {
+          return MaterialPageRoute(
+            settings: settings,
+            builder:
+                (_) =>
+                    ClassDetailScreen(classId: settings.arguments as String?),
           );
         }
         // 탭 인덱스를 arguments에서 가져오기

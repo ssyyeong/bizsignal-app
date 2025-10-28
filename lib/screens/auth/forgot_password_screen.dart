@@ -1,5 +1,6 @@
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/widgets/app_bar_widget.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -61,9 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void _sendVerificationCode() async {
     if (_emailController.text.isEmpty || _phoneController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('이메일과 휴대폰 번호를 모두 입력해주세요')));
+      ToastWidget.showError(context, message: '이메일과 휴대폰 번호를 모두 입력해주세요');
       return;
     }
 
@@ -82,17 +81,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     _startVerificationTimer();
 
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('인증번호가 발송되었습니다')));
+      ToastWidget.showInfo(context, message: '인증번호가 발송되었습니다');
     }
   }
 
   void verifyCode() async {
     if (_verificationCodeController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('인증번호를 입력해주세요')));
+      ToastWidget.showError(context, message: '인증번호를 입력해주세요');
       return;
     }
 
@@ -108,9 +103,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _isVerified = true;
     });
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('인증이 완료되었습니다')));
+    ToastWidget.showInfo(context, message: '인증이 완료되었습니다');
   }
 
   void changePassword() async {
@@ -127,9 +120,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('비밀번호가 변경되었습니다')));
+        ToastWidget.showInfo(context, message: '비밀번호가 변경되었습니다');
         Navigator.of(context).pop(); // 로그인 화면으로 돌아가기
       }
     }

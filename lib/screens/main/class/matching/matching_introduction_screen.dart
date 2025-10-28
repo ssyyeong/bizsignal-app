@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bizsignal_app/controller/base/controller_base.dart';
 import 'package:bizsignal_app/data/providers/user_provider.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:bizsignal_app/widgets/app_bar_widget.dart';
@@ -68,9 +69,7 @@ class _MatchingIntroductionScreenState
           Navigator.pushNamed(context, '/matching_complete');
         })
         .catchError((error) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('매칭 정보 적용에 실패했습니다.')));
+          ToastWidget.showError(context, message: '매칭 정보 적용에 실패했습니다.');
         });
   }
 

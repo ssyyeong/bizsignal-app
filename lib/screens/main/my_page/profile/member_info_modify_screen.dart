@@ -7,6 +7,7 @@ import 'package:bizsignal_app/screens/main/my_page/my_page_screen.dart';
 import 'package:bizsignal_app/widgets/common_text_field.dart';
 import 'package:bizsignal_app/widgets/common_toggle_button.dart';
 import 'package:bizsignal_app/widgets/terms_agreement_bottom_sheet.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -141,9 +142,7 @@ class _MemberInfoModifyScreenState extends State<MemberInfoModifyScreen> {
           (value) => {
             if (mounted)
               {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('회원정보 수정이 완료되었습니다.')),
-                ),
+                ToastWidget.showInfo(context, message: '회원정보 수정이 완료되었습니다.'),
                 //마이페이지 화면으로 이동
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const MyPageScreen()),
@@ -872,8 +871,9 @@ class _MemberInfoModifyScreenState extends State<MemberInfoModifyScreen> {
                       if (_formKey.currentState!.validate()) {
                         memberInfoModify();
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('회원정보 수정이 완료되었습니다.')),
+                        ToastWidget.showError(
+                          context,
+                          message: '회원정보 수정이 완료되었습니다.',
                         );
                       }
                     },

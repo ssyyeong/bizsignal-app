@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:bizsignal_app/controller/base/controller_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:bizsignal_app/constants/app_colors.dart';
@@ -15,43 +18,8 @@ class ClassScreen extends StatefulWidget {
 class _ClassScreenState extends State<ClassScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool _showOnlyFourOrMore = false;
-
-  // 샘플 데이터
-  final List<Map<String, dynamic>> _meetings = [
-    {
-      'title': '강남역 비즈 모임',
-      'description': '교육분야 사업전략을 같이 고민해보고싶습니다.',
-      'tags': ['사업 전략', '교육', '강남'],
-      'currentParticipants': 3,
-      'maxParticipants': 6,
-      'isRecruiting': true,
-    },
-    {
-      'title': '홍대역 비즈 모임',
-      'description': '교육분야 사업전략을 같이 고민해보고싶습니다.',
-      'tags': ['제품/기술', '헬스케어', '홍대'],
-      'currentParticipants': 2,
-      'maxParticipants': 6,
-      'isRecruiting': true,
-    },
-    {
-      'title': '홍대역 비즈 모임',
-      'description': '교육분야 사업전략을 같이 고민해보고싶습니다.',
-      'tags': ['제품/기술', '헬스케어', '홍대'],
-      'currentParticipants': 2,
-      'maxParticipants': 6,
-      'isRecruiting': true,
-    },
-    {
-      'title': '판교 비즈 모임',
-      'description': '교육분야 사업전략을 같이 고민해보고싶습니다.',
-      'tags': ['인사/조직', 'IT', '판교'],
-      'currentParticipants': 6,
-      'maxParticipants': 6,
-      'isRecruiting': false,
-    },
-  ];
+  bool _showOnlyFourOrMore = true;
+  List<dynamic> classList = [];
 
   @override
   void initState() {
@@ -62,6 +30,7 @@ class _ClassScreenState extends State<ClassScreen>
       vsync: this,
       initialIndex: initialIndex.clamp(0, 2),
     );
+    fetchData();
   }
 
   @override
@@ -70,12 +39,42 @@ class _ClassScreenState extends State<ClassScreen>
     super.dispose();
   }
 
+  void fetchData() async {
+    await ControllerBase(modelName: 'Class', modelId: 'class').findAll({}).then(
+      (result) {
+        setState(() {
+          classList = result['result']['rows'];
+        });
+      },
+    );
+  }
+
   String _getNextThursday() {
     final now = DateTime.now();
     final daysUntilThursday = (DateTime.thursday - now.weekday) % 7;
     final daysToAdd = daysUntilThursday == 0 ? 7 : daysUntilThursday;
     final nextThursday = now.add(Duration(days: daysToAdd));
     return '${nextThursday.month}월 ${nextThursday.day}일 목요일 저녁';
+  }
+
+  bool _isApplicationPeriod() {
+    final now = DateTime.now();
+    final weekday = now.weekday;
+    final hour = now.hour;
+
+    // 목요일(4) 00:00 ~ 화요일(2) 18:00
+    if (weekday == DateTime.thursday) {
+      return true; // 목요일은 항상 신청 기간
+    } else if (weekday == DateTime.friday ||
+        weekday == DateTime.saturday ||
+        weekday == DateTime.sunday ||
+        weekday == DateTime.monday) {
+      return true; // 금, 토, 일, 월요일은 항상 신청 기간
+    } else if (weekday == DateTime.tuesday) {
+      return hour < 18; // 화요일은 18:00까지만
+    } else {
+      return false; // 수요일은 신청 기간 아님
+    }
   }
 
   @override
@@ -130,75 +129,76 @@ class _ClassScreenState extends State<ClassScreen>
                 ),
               ),
             ),
-            // 배너
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary50,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/icon/calendar_color.svg',
-                        width: 40,
-                        height: 40,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _getNextThursday(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primary,
+            // 배너 (신청 기간에만 표시)
+            if (_isApplicationPeriod())
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/icon/calendar_color.svg',
+                          width: 40,
+                          height: 40,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _getNextThursday(),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.primary,
+                                ),
                               ),
+                              const SizedBox(height: 2),
+                              const Text(
+                                '이번 주 모임 신청 기간입니다. \n목요일부터 화요일까지 신청하실 수 있어요!',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.gray600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 21),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/class_create');
+                          },
+                          child: Container(
+                            width: 61,
+                            height: 28,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              '이번 주 모임 신청 기간입니다. \n목요일부터 수요일까지 신청하실 수 있어요!',
+                            child: const Text(
+                              '모임 개설',
                               style: TextStyle(
-                                fontSize: 11,
-                                color: AppColors.gray600,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.gray700,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 21),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/matching_complete');
-                        },
-                        child: Container(
-                          width: 61,
-                          height: 28,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            '모임 개설',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.gray700,
-                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
             // 탭
             SliverPersistentHeader(
               pinned: true,
@@ -262,16 +262,28 @@ class _ClassScreenState extends State<ClassScreen>
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  final meeting = _meetings[index];
+                  //지역
+                  final region = classList[index]['REGION'];
+                  //관심사
+                  final interestArea = classList[index]['INTEREST_AREA'];
+
+                  //날짜, 시간
+                  final dateStr = classList[index]['DATE'];
+                  final meetingDate = DateTime.parse(dateStr);
+
                   return ClassMeetingCard(
-                    title: meeting['title'] as String,
-                    description: meeting['description'] as String,
-                    tags: meeting['tags'] as List<String>,
-                    currentParticipants: meeting['currentParticipants'] as int,
-                    maxParticipants: meeting['maxParticipants'] as int,
-                    isRecruiting: meeting['isRecruiting'] as bool,
+                    id:
+                        classList[index]['CLASS_IDENTIFICATION_CODE']
+                            .toString(),
+                    title: '$region $interestArea 모임',
+                    description: classList[index]['INTRODUCTION'],
+                    interestArea: interestArea,
+                    currentParticipants:
+                        classList[index]['ClassApplies']?.length + 1 ?? 0,
+                    maxParticipants: classList[index]['PERSON_COUNT'] as int,
+                    isRecruiting: meetingDate.isAfter(DateTime.now()),
                   );
-                }, childCount: _meetings.length),
+                }, childCount: classList.length),
               ),
             ),
           ],

@@ -1,20 +1,23 @@
+import 'package:bizsignal_app/screens/main/class/class_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../constants/app_colors.dart';
 
 class ClassMeetingCard extends StatelessWidget {
+  final String id;
   final String title;
   final String description;
-  final List<String> tags;
+  final String interestArea;
   final int currentParticipants;
   final int maxParticipants;
   final bool isRecruiting;
 
   const ClassMeetingCard({
     super.key,
+    required this.id,
     required this.title,
     required this.description,
-    required this.tags,
+    required this.interestArea,
     required this.currentParticipants,
     required this.maxParticipants,
     required this.isRecruiting,
@@ -116,37 +119,30 @@ class ClassMeetingCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children:
-                    tags.map((tag) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          border: Border.all(color: AppColors.border),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          tag,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color:
-                                isRecruiting
-                                    ? AppColors.gray700
-                                    : AppColors.gray500,
-                          ),
-                        ),
-                      );
-                    }).toList(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  border: Border.all(color: AppColors.border),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  interestArea,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: isRecruiting ? AppColors.gray700 : AppColors.gray500,
+                  ),
+                ),
               ),
+
               GestureDetector(
                 onTap: () {
-                  // TODO: 신청하기 기능 구현
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ClassDetailScreen(classId: id),
+                    ),
+                  );
                 },
                 child: Container(
                   width: 80,

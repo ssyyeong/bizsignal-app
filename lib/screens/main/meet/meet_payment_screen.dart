@@ -1,3 +1,4 @@
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:intl/intl.dart';
 
 import 'package:bizsignal_app/constants/app_colors.dart';
@@ -34,12 +35,7 @@ class _MeetPaymentScreenState extends State<MeetPaymentScreen> {
   void payment() {
     if (!isAgree) {
       // 구매 동의가 안된 경우
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('구매에 동의해주세요.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      ToastWidget.showError(context, message: '구매에 동의해주세요.');
       return;
     }
 

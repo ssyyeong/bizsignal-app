@@ -10,7 +10,12 @@ import 'package:flutter_svg/svg.dart';
 
 class MeetDetailScreen extends StatefulWidget {
   final String profileCardId;
-  const MeetDetailScreen({super.key, required this.profileCardId});
+  final bool isMeeting;
+  const MeetDetailScreen({
+    super.key,
+    required this.profileCardId,
+    required this.isMeeting,
+  });
 
   @override
   State<MeetDetailScreen> createState() => _MeetDetailScreenState();
@@ -347,45 +352,47 @@ class _MeetDetailScreenState extends State<MeetDetailScreen> {
             ),
           ),
           // 만남 신청 버튼 - 하단 고정
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 40), // 하단 여백 증가
-            decoration: const BoxDecoration(color: Colors.white),
-            child: SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  // 만남 신청 로직
-                  debugPrint(
-                    'MeetDetailScreen - profileCardId: ${profileData['PROFILE_CARD_IDENTIFICATION_CODE']}',
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => MeetApplicationScreen(
-                            profileCardId:
-                                profileData['PROFILE_CARD_IDENTIFICATION_CODE'] ??
-                                0,
-                          ),
+          if (widget.isMeeting == true) ...[
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 40), // 하단 여백 증가
+              decoration: const BoxDecoration(color: Colors.white),
+              child: SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // 만남 신청 로직
+                    debugPrint(
+                      'MeetDetailScreen - profileCardId: ${profileData['PROFILE_CARD_IDENTIFICATION_CODE']}',
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => MeetApplicationScreen(
+                              profileCardId:
+                                  profileData['PROFILE_CARD_IDENTIFICATION_CODE'] ??
+                                  0,
+                            ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    elevation: 0,
                   ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  '만남 신청',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  child: const Text(
+                    '만남 신청',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

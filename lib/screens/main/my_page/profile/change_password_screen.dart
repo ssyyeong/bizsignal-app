@@ -1,5 +1,6 @@
 import 'package:bizsignal_app/controller/base/controller_base.dart';
 import 'package:bizsignal_app/data/providers/user_provider.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/widgets/app_bar_widget.dart';
@@ -84,9 +85,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             'PASSWORD': _newPasswordController.text,
           })
           .then((result) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('비밀번호가 변경되었습니다.')));
+            ToastWidget.showInfo(context, message: '비밀번호가 변경되었습니다.');
             Navigator.pop(context);
           });
     }

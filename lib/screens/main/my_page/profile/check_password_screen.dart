@@ -1,4 +1,5 @@
 import 'package:bizsignal_app/controller/custom/app_member_controller.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/widgets/app_bar_widget.dart';
@@ -39,9 +40,7 @@ class _CheckPasswordScreenState extends State<CheckPasswordScreen> {
             if (value) {
               Navigator.pushNamed(context, '/member_info_modify');
             } else {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('비밀번호가 일치하지 않습니다.')));
+              ToastWidget.showError(context, message: '비밀번호가 일치하지 않습니다.');
             }
           });
     }

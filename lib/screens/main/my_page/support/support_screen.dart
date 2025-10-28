@@ -1,5 +1,6 @@
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/controller/base/controller_base.dart';
+import 'package:bizsignal_app/widgets/toast_widget.dart';
 import 'package:flutter/material.dart';
 
 class SupportScreen extends StatefulWidget {
@@ -94,12 +95,7 @@ class _SupportScreenState extends State<SupportScreen>
           'CONTENT': _contentController.text,
         })
         .then((result) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('문의가 접수되었습니다.'),
-              backgroundColor: AppColors.primary,
-            ),
-          );
+          ToastWidget.showInfo(context, message: '문의가 접수되었습니다.');
           _fetchQuestions();
           setState(() {
             _showInquiryModal = false;
