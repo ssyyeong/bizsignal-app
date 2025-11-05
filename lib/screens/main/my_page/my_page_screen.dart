@@ -303,16 +303,25 @@ class _MyPageScreenState extends State<MyPageScreen> {
   }
 
   Widget _buildBusinessPartnershipBanner() {
-    return SvgPicture.asset(
-      'assets/images/my_page/solution.svg',
-      width: double.infinity,
-      height: 80,
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/partnership');
+      },
+      child: SvgPicture.asset(
+        'assets/images/my_page/solution.svg',
+        width: double.infinity,
+        height: 80,
+      ),
     );
   }
 
   Widget _buildServiceShortcuts() {
     final services = <Map<String, dynamic>>[
-      {'icon': 'assets/images/my_page/calendar.svg', 'label': '비즈 캘린더'},
+      {
+        'icon': 'assets/images/my_page/calendar.svg',
+        'label': '비즈 캘린더',
+        'route': '/calendar',
+      },
       {
         'icon': 'assets/images/my_page/profile.svg',
         'label': '프로필 카드 관리',
@@ -328,7 +337,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
         'label': '혜택관리',
         'route': '/benefit',
       },
-      {'icon': 'assets/images/my_page/review.svg', 'label': '후기'},
+      {
+        'icon': 'assets/images/my_page/review.svg',
+        'label': '후기',
+        'route': '/review',
+      },
       {
         'icon': 'assets/images/my_page/headset.svg',
         'label': '고객 센터',

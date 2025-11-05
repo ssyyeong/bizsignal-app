@@ -25,6 +25,14 @@ class ClassDetailScreen extends StatefulWidget {
 class _ClassDetailScreenState extends State<ClassDetailScreen> {
   Map<String, dynamic>? classData;
   bool btnVisible = false;
+  // 모임 정책
+  List<String> classPolicies = [
+    '모임의 장소와 세부 시간은 참여 인원 간의 대화로 결정됩니다.\n참석이 어려운 경우, 단체 채팅방에서 참석 여부를 반드시 사전에 설정해주세요.',
+    '참석 확정 이후 무단 불참(노쇼)이 반복될 경우, 서비스 이용이 제한될 수 있습니다.',
+    '모임 중 다뤄지는 주제는 모임 키워드와 관련된 비즈니스 대화를 중심으로 진행됩니다.',
+    '모임 이후 불편사항이나 개선 의견은 후기 작성을 통해 전달해주세요.\n여러분의 의견은 더 나은 서비스 운영에 반영됩니다.',
+    '서로의 시간을 존중하고, 열린 태도로 참여해주세요.\n비즈시그널은 창업가들의 진정성 있는 연결을 지향합니다.',
+  ];
 
   @override
   void initState() {
@@ -303,68 +311,68 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                   ),
                 ),
                 // 비즈모임 정책
-                // Row(
-                //   children: [
-                //     SvgPicture.asset(
-                //       'assets/images/icon/info_circle.svg',
-                //       width: 20,
-                //       height: 20,
-                //       colorFilter: const ColorFilter.mode(
-                //         AppColors.gray900,
-                //         BlendMode.srcIn,
-                //       ),
-                //     ),
-                //     const SizedBox(width: 8),
-                //     const Text(
-                //       '비즈모임 정책',
-                //       style: TextStyle(
-                //         fontSize: 16,
-                //         fontWeight: FontWeight.w700,
-                //         color: AppColors.gray900,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 16),
-                // ...List.generate(
-                //   6,
-                //   (index) => Padding(
-                //     padding: const EdgeInsets.only(bottom: 12),
-                //     child: Row(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         Container(
-                //           width: 24,
-                //           height: 24,
-                //           alignment: Alignment.center,
-                //           decoration: BoxDecoration(
-                //             color: AppColors.gray100,
-                //             borderRadius: BorderRadius.circular(6),
-                //           ),
-                //           child: Text(
-                //             '${index + 1}',
-                //             style: const TextStyle(
-                //               fontSize: 12,
-                //               fontWeight: FontWeight.w700,
-                //               color: AppColors.gray700,
-                //             ),
-                //           ),
-                //         ),
-                //         const SizedBox(width: 12),
-                //         const Expanded(
-                //           child: Text(
-                //             '운영 정책 내용이 들어갑니다.',
-                //             style: TextStyle(
-                //               fontSize: 13,
-                //               color: AppColors.gray600,
-                //               height: 1.4,
-                //             ),
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/icon/policy.svg',
+                        width: 12,
+                        height: 12,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        '비즈모임 정책',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.gray900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.gray50,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      ...List.generate(
+                        classPolicies.length,
+                        (index) => Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${index + 1}.',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.gray700,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                classPolicies[index],
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.gray600,
+                                  height: 1.5,
+                                ),
+                                softWrap: true,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 120),
               ],
             ),
@@ -376,7 +384,10 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
             left: 0,
             right: 0,
             child:
-                btnVisible
+                btnVisible &&
+                        DateTime.parse(
+                          classData!['DATE'],
+                        ).isAfter(DateTime.now())
                     ? PrimaryButton(
                       text: '모임 정책을 확인하였고, 이에 동의합니다.',
                       onPressed: () {

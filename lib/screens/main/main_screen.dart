@@ -36,6 +36,12 @@ import 'package:bizsignal_app/screens/main/my_page/profile/change_password_scree
 import 'package:bizsignal_app/screens/main/my_page/profile/member_info_modify_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/support/support_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/benefit/benefit_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/partnership/partnership_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/partnership/partnership_detail_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/calendar/calendar_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/review_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/partnership/partnership_inquiry_screen.dart';
+import 'package:bizsignal_app/screens/main/notification/notification_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -229,6 +235,14 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           );
         }
 
+        // 알림 페이지(/notification)
+        if (settings.name == '/notification') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/notification'),
+            builder: (_) => const NotificationScreen(),
+          );
+        }
+
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const HomeScreen(),
@@ -318,6 +332,14 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/meet/profile_card'),
             builder: (_) => const ProfileCardScreen(),
+          );
+        }
+
+        // 알림 페이지(/notification)
+        if (settings.name == '/notification') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/notification'),
+            builder: (_) => const NotificationScreen(),
           );
         }
 
@@ -418,6 +440,15 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
                     ClassDetailScreen(classId: settings.arguments as String?),
           );
         }
+
+        // 알림 페이지(/notification)
+        if (settings.name == '/notification') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/notification'),
+            builder: (_) => const NotificationScreen(),
+          );
+        }
+
         // 탭 인덱스를 arguments에서 가져오기
         final tabIndex = settings.arguments as int?;
 
@@ -433,6 +464,14 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
     return Navigator(
       key: _chatKey,
       onGenerateRoute: (settings) {
+        // 알림 페이지(/notification)
+        if (settings.name == '/notification') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/notification'),
+            builder: (_) => const NotificationScreen(),
+          );
+        }
+
         return MaterialPageRoute(
           settings: const RouteSettings(name: '/chat'),
           builder: (_) => const ChatScreen(),
@@ -492,6 +531,31 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           );
         }
 
+        // 파트너십(/my_page/partnership)
+        if (settings.name == '/partnership') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/partnership'),
+            builder: (_) => const PartnershipScreen(),
+          );
+        }
+
+        if (settings.name == '/partnership_detail') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/partnership_detail'),
+            builder:
+                (_) => PartnershipDetailScreen(
+                  coalitionId: settings.arguments as String,
+                ),
+          );
+        }
+
+        if (settings.name == '/partnership_inquiry') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/partnership_inquiry'),
+            builder: (_) => const PartnershipInquiryScreen(),
+          );
+        }
+
         // 프로필 카드(/my_page/profile_card)
         if (settings.name == '/profile_card') {
           return MaterialPageRoute(
@@ -505,6 +569,22 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/my_page/benefit'),
             builder: (_) => const BenefitScreen(),
+          );
+        }
+
+        // 비즈 캘린더(/my_page/calendar)
+        if (settings.name == '/calendar') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/calendar'),
+            builder: (_) => const CalendarScreen(),
+          );
+        }
+
+        // 후기(/my_page/review)
+        if (settings.name == '/review') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/review'),
+            builder: (_) => const ReviewScreen(),
           );
         }
 

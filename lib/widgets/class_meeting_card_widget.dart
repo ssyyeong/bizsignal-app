@@ -137,12 +137,16 @@ class ClassMeetingCard extends StatelessWidget {
 
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ClassDetailScreen(classId: id),
-                    ),
-                  );
+                  if (isRecruiting) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ClassDetailScreen(classId: id),
+                      ),
+                    );
+                  } else {
+                    return;
+                  }
                 },
                 child: Container(
                   width: 80,

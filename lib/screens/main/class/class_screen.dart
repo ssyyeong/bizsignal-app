@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bizsignal_app/controller/base/controller_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -105,24 +103,30 @@ class _ClassScreenState extends State<ClassScreen>
                           color: AppColors.gray900,
                         ),
                       ),
-                      Stack(
-                        children: [
-                          SvgPicture.asset(
-                            'assets/images/icon/bell_simple.svg',
-                          ),
-                          Positioned(
-                            top: -2,
-                            right: -2,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.primary,
+
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/notification');
+                        },
+                        child: Stack(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/images/icon/bell_simple.svg',
+                            ),
+                            Positioned(
+                              top: 2,
+                              right: 2,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.primary,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),

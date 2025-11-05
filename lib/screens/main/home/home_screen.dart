@@ -56,7 +56,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 100,
                       height: 15,
                     ),
-                    SvgPicture.asset('assets/images/icon/bell_simple.svg'),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/notification');
+                      },
+                      child: Stack(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/icon/bell_simple.svg',
+                          ),
+                          Positioned(
+                            top: 2,
+                            right: 2,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),

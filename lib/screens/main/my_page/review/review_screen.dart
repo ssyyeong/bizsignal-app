@@ -1,9 +1,7 @@
 import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/controller/base/controller_base.dart';
-import 'package:bizsignal_app/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:bizsignal_app/widgets/empty_state.dart';
 
 class ReviewScreen extends StatefulWidget {
   const ReviewScreen({super.key});
@@ -18,8 +16,8 @@ class _ReviewScreenState extends State<ReviewScreen>
   int _currentPage = 1;
   final int _totalPages = 5;
 
-  List<dynamic> ownedBenefits = [];
-  List<dynamic> expiredBenefits = [];
+  List<dynamic> classReviews = [];
+  List<dynamic> meetReviews = [];
 
   @override
   void initState() {
@@ -28,7 +26,7 @@ class _ReviewScreenState extends State<ReviewScreen>
     _tabController.addListener(() {
       setState(() {}); // 탭 변경 시 UI 업데이트
     });
-    _fetchBenefits();
+    _fetchReviews();
   }
 
   @override
@@ -37,30 +35,15 @@ class _ReviewScreenState extends State<ReviewScreen>
     super.dispose();
   }
 
-  void _fetchBenefits() async {
-    await ControllerBase(modelName: 'Benefit', modelId: 'benefit')
-        .findAll({
-          'APP_MEMBER_IDENTIFICATION_CODE':
-              context.read<UserProvider>().user.id,
-        })
-        .then((result) {
-          setState(() {
-            ownedBenefits.clear();
-            expiredBenefits.clear();
-
-            result['result']['rows'].forEach((benefit) {
-              if ((benefit['EXPIRATION_DATE'] != null &&
-                      DateTime.parse(
-                        benefit['EXPIRATION_DATE'],
-                      ).isBefore(DateTime.now())) ||
-                  benefit['USED_YN'] == 'Y') {
-                expiredBenefits.add(benefit);
-              } else {
-                ownedBenefits.add(benefit);
-              }
-            });
-          });
-        });
+  void _fetchReviews() async {
+    await ControllerBase(
+      modelName: 'Review',
+      modelId: 'review',
+    ).findAll({}).then((result) {
+      setState(() {
+        classReviews = result['result']['rows'];
+      });
+    });
   }
 
   @override
@@ -69,7 +52,7 @@ class _ReviewScreenState extends State<ReviewScreen>
       backgroundColor: AppColors.white,
       appBar: AppBar(
         title: const Text(
-          '혜택 관리',
+          '후기',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -110,7 +93,7 @@ class _ReviewScreenState extends State<ReviewScreen>
               isScrollable: false,
               dividerColor: Colors.transparent,
               indicatorPadding: const EdgeInsets.symmetric(horizontal: 16),
-              tabs: const [Tab(text: '보유 혜택'), Tab(text: '만료 혜택')],
+              tabs: const [Tab(text: '모임'), Tab(text: '만남')],
             ),
           ),
           // 탭 컨텐츠
@@ -126,17 +109,26 @@ class _ReviewScreenState extends State<ReviewScreen>
   }
 
   Widget _buildOwnedBenefitsTab() {
+    if (classReviews.isEmpty) {
+      return const Center(
+        child: EmptyState(
+          title: '리뷰 목록이 없습니다.',
+          description: '모임 신청을 하고 후기를 남겨보세요.',
+          icon: Icons.rate_review_outlined,
+        ),
+      );
+    }
     return Column(
       children: [
         // 보유 혜택 목록
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-            itemCount: ownedBenefits.length,
+            itemCount: classReviews.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              final benefit = ownedBenefits[index];
-              return _buildBenefitCard(benefit, false);
+              final review = classReviews[index];
+              return _buildReviewCard(review);
             },
           ),
         ),
@@ -147,17 +139,26 @@ class _ReviewScreenState extends State<ReviewScreen>
   }
 
   Widget _buildExpiredBenefitsTab() {
+    if (meetReviews.isEmpty) {
+      return const Center(
+        child: EmptyState(
+          title: '만남 리뷰가 없습니다.',
+          description: '만남 신청을 하고 후기를 남겨보세요.',
+          icon: Icons.chat_bubble_outline,
+        ),
+      );
+    }
     return Column(
       children: [
         // 만료 혜택 목록
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-            itemCount: expiredBenefits.length,
+            itemCount: meetReviews.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              final benefit = expiredBenefits[index];
-              return _buildBenefitCard(benefit, true);
+              final review = meetReviews[index];
+              return _buildReviewCard(review);
             },
           ),
         ),
@@ -167,7 +168,7 @@ class _ReviewScreenState extends State<ReviewScreen>
     );
   }
 
-  Widget _buildBenefitCard(Map<String, dynamic> benefit, bool isExpired) {
+  Widget _buildReviewCard(Map<String, dynamic> review) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -178,36 +179,6 @@ class _ReviewScreenState extends State<ReviewScreen>
             color: Colors.black.withOpacity(0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 카테고리
-          Text(
-            benefit['CATEGORY'],
-            style: const TextStyle(fontSize: 12, color: AppColors.gray800),
-          ),
-          const SizedBox(height: 8),
-          // 혜택 제목
-          Text(
-            '[${benefit['CATEGORY']}] ${benefit['NAME']}',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: isExpired ? AppColors.gray600 : AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          // 만료일 또는 상태
-          Text(
-            isExpired
-                ? benefit['USED_YN'] == 'Y'
-                    ? '${DateFormat('yyyy.MM.dd').format(DateTime.parse(benefit['UPDATED_AT']))} 사용완료'
-                    : '${DateFormat('yyyy.MM.dd').format(DateTime.parse(benefit['EXPIRATION_DATE']))} 기간만료'
-                : '${DateFormat('yyyy.MM.dd').format(DateTime.parse(benefit['EXPIRATION_DATE']))}까지',
-            style: const TextStyle(fontSize: 12, color: AppColors.black),
           ),
         ],
       ),
