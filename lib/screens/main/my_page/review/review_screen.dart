@@ -2,6 +2,11 @@ import 'package:bizsignal_app/constants/app_colors.dart';
 import 'package:bizsignal_app/controller/base/controller_base.dart';
 import 'package:flutter/material.dart';
 import 'package:bizsignal_app/widgets/empty_state.dart';
+import 'package:bizsignal_app/widgets/review_card_widget.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/class_review_write_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/class_review_detail_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/meet_review_write_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/meet_review_detail_screen.dart';
 
 class ReviewScreen extends StatefulWidget {
   const ReviewScreen({super.key});
@@ -26,7 +31,49 @@ class _ReviewScreenState extends State<ReviewScreen>
     _tabController.addListener(() {
       setState(() {}); // 탭 변경 시 UI 업데이트
     });
-    _fetchReviews();
+    // 테스트 데이터 설정
+    _initTestData();
+    // _fetchClassReviews();
+    // _fetchMeetReviews();
+  }
+
+  void _initTestData() {
+    // 테스트 데이터
+    classReviews = [
+      {
+        'TITLE': '강남역 비즈 모임',
+        'PARTICIPANTS': 4,
+        'DATE': '2025-06-12',
+        'TAGS': ['사업 전략', '교육'],
+        'STATUS': '모임 종료',
+        'ATTENDANCE': '참석완료',
+        'REVIEW_TEXT': '모임 일정이 더 다양했으면 좋겠습니다!', // 후기 작성됨
+        'HAS_REVIEW': true,
+      },
+      {
+        'TITLE': '강남역 비즈 모임',
+        'PARTICIPANTS': 4,
+        'DATE': '2025-06-12',
+        'TAGS': ['사업 전략', '교육'],
+        'STATUS': '모임 종료',
+        'ATTENDANCE': '참석완료',
+        'REVIEW_TEXT': null, // 후기 미작성
+        'HAS_REVIEW': false,
+      },
+    ];
+
+    meetReviews = [
+      {
+        'NAME': '김소윤',
+        'COMPANY': '키뮤트',
+        'DATE': '2025-06-13',
+        'TAGS': ['투자/자금유치'],
+        'STATUS': '만남 종료',
+        'ATTENDANCE': '참석완료',
+        'REVIEW_TEXT': '좋은 만남이었습니다!',
+        'HAS_REVIEW': true,
+      },
+    ];
   }
 
   @override
@@ -35,13 +82,26 @@ class _ReviewScreenState extends State<ReviewScreen>
     super.dispose();
   }
 
-  void _fetchReviews() async {
+  // ignore: unused_element
+  void _fetchClassReviews() async {
     await ControllerBase(
-      modelName: 'Review',
-      modelId: 'review',
+      modelName: 'ClassReview',
+      modelId: 'class_review',
     ).findAll({}).then((result) {
       setState(() {
         classReviews = result['result']['rows'];
+      });
+    });
+  }
+
+  // ignore: unused_element
+  void _fetchMeetReviews() async {
+    await ControllerBase(
+      modelName: 'MeetingReview',
+      modelId: 'meeting_review',
+    ).findAll({}).then((result) {
+      setState(() {
+        meetReviews = result['result']['rows'];
       });
     });
   }
@@ -169,20 +229,137 @@ class _ReviewScreenState extends State<ReviewScreen>
   }
 
   Widget _buildReviewCard(Map<String, dynamic> review) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    final isClassTab = _tabController.index == 0;
+    final hasReview =
+        review['HAS_REVIEW'] == true ||
+        (review['REVIEW_TEXT'] != null &&
+            review['REVIEW_TEXT'].toString().isNotEmpty);
+
+    return ReviewCardWidget(
+      review: review,
+      isClassType: isClassTab,
+      showButton: true,
+      hasReview: hasReview,
+      onButtonPressed: () {
+        if (hasReview) {
+          // 상세 화면으로 이동
+          if (isClassTab) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => ClassReviewDetailScreen(
+                      reviewData: _convertToClassReviewData(review),
+                    ),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => MeetReviewDetailScreen(
+                      reviewData: _convertToMeetReviewData(review),
+                    ),
+              ),
+            );
+          }
+        } else {
+          // 작성 화면으로 이동
+          if (isClassTab) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => ClassReviewWriteScreen(
+                      classData: _convertToClassData(review),
+                    ),
+              ),
+            ).then((_) {
+              // 작성 후 목록 새로고침
+              _initTestData();
+              setState(() {});
+            });
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => MeetReviewWriteScreen(
+                      meetData: _convertToMeetData(review),
+                    ),
+              ),
+            ).then((_) {
+              // 작성 후 목록 새로고침
+              _initTestData();
+              setState(() {});
+            });
+          }
+        }
+      },
     );
+  }
+
+  Map<String, dynamic> _convertToClassData(Map<String, dynamic> review) {
+    return {
+      'title': review['TITLE'] ?? review['title'] ?? '',
+      'participants': review['PARTICIPANTS'] ?? review['participants'] ?? 0,
+      'date': review['DATE'] ?? review['date'] ?? '',
+      'tags': review['TAGS'] ?? review['tags'] ?? [],
+      'status': review['STATUS'] ?? review['status'] ?? '모임 종료',
+      'attendance': review['ATTENDANCE'] ?? review['attendance'] ?? '참석완료',
+    };
+  }
+
+  Map<String, dynamic> _convertToMeetData(Map<String, dynamic> review) {
+    return {
+      'name': review['NAME'] ?? review['name'] ?? '',
+      'company': review['COMPANY'] ?? review['company'] ?? '',
+      'date': review['DATE'] ?? review['date'] ?? '',
+      'tags': review['TAGS'] ?? review['tags'] ?? [],
+      'status': review['STATUS'] ?? review['status'] ?? '만남 종료',
+      'attendance': review['ATTENDANCE'] ?? review['attendance'] ?? '참석완료',
+    };
+  }
+
+  Map<String, dynamic> _convertToClassReviewData(Map<String, dynamic> review) {
+    return {
+      'meeting': _convertToClassData(review),
+      'answers': {
+        'attendance':
+            review['ATTENDANCE_ANSWER'] ?? review['attendanceAnswer'] ?? 0,
+        'topicRelevance':
+            review['TOPIC_RELEVANCE_ANSWER'] ??
+            review['topicRelevanceAnswer'] ??
+            0,
+        'businessHelp':
+            review['BUSINESS_HELP_ANSWER'] ?? review['businessHelpAnswer'] ?? 0,
+        'nextMeeting':
+            review['NEXT_MEETING_ANSWER'] ?? review['nextMeetingAnswer'] ?? 0,
+        'reason': review['REASON'] ?? review['reason'],
+      },
+      'reviewText': review['REVIEW_TEXT'] ?? review['reviewText'] ?? '',
+    };
+  }
+
+  Map<String, dynamic> _convertToMeetReviewData(Map<String, dynamic> review) {
+    return {
+      'meet': _convertToMeetData(review),
+      'answers': {
+        'attendance':
+            review['ATTENDANCE_ANSWER'] ?? review['attendanceAnswer'] ?? 0,
+        'topicRelevance':
+            review['TOPIC_RELEVANCE_ANSWER'] ??
+            review['topicRelevanceAnswer'] ??
+            0,
+        'businessHelp':
+            review['BUSINESS_HELP_ANSWER'] ?? review['businessHelpAnswer'] ?? 0,
+        'nextMeeting':
+            review['NEXT_MEETING_ANSWER'] ?? review['nextMeetingAnswer'] ?? 0,
+        'reason': review['REASON'] ?? review['reason'],
+      },
+      'reviewText': review['REVIEW_TEXT'] ?? review['reviewText'] ?? '',
+    };
   }
 
   Widget _buildPagination() {

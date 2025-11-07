@@ -41,6 +41,11 @@ import 'package:bizsignal_app/screens/main/my_page/partnership/partnership_detai
 import 'package:bizsignal_app/screens/main/my_page/calendar/calendar_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/review/review_screen.dart';
 import 'package:bizsignal_app/screens/main/my_page/partnership/partnership_inquiry_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/class_review_detail_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/class_review_write_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/meet_review_detail_screen.dart';
+import 'package:bizsignal_app/screens/main/my_page/review/meet_review_write_screen.dart';
+
 import 'package:bizsignal_app/screens/main/notification/notification_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -86,9 +91,13 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
             _chatKey,
             _myKey,
           ][index].currentState!;
-      nav.popUntil((route) => route.isFirst);
+      if (nav.canPop()) {
+        nav.popUntil((route) => route.isFirst);
+      }
     } else {
-      setState(() => _selectedIndex = index);
+      if (mounted) {
+        setState(() => _selectedIndex = index);
+      }
     }
   }
 
@@ -116,17 +125,19 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildBottomBar() {
-    return Container(
-      height: 62,
-      decoration: const BoxDecoration(color: Colors.white),
-      child: Row(
-        children: [
-          _buildNavItem(0, '홈', 'assets/images/navigator/home.svg'),
-          _buildNavItem(1, '만남', 'assets/images/navigator/meet.svg'),
-          _buildNavItem(2, '모임', 'assets/images/navigator/class.svg'),
-          _buildNavItem(3, '채팅', 'assets/images/navigator/chat.svg'),
-          _buildNavItem(4, '마이페이지', 'assets/images/navigator/my_page.svg'),
-        ],
+    return RepaintBoundary(
+      child: Container(
+        height: 62,
+        decoration: const BoxDecoration(color: Colors.white),
+        child: Row(
+          children: [
+            _buildNavItem(0, '홈', 'assets/images/navigator/home.svg'),
+            _buildNavItem(1, '만남', 'assets/images/navigator/meet.svg'),
+            _buildNavItem(2, '모임', 'assets/images/navigator/class.svg'),
+            _buildNavItem(3, '채팅', 'assets/images/navigator/chat.svg'),
+            _buildNavItem(4, '마이페이지', 'assets/images/navigator/my_page.svg'),
+          ],
+        ),
       ),
     );
   }
@@ -134,8 +145,10 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
   Widget _buildNavItem(int index, String label, String iconPath) {
     final isSelected = _selectedIndex == index;
     return Expanded(
-      child: GestureDetector(
+      child: InkWell(
         onTap: () => _onItemTapped(index),
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: Colors.transparent,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
@@ -585,6 +598,38 @@ class _MainState extends State<MainScreen> with WidgetsBindingObserver {
           return MaterialPageRoute(
             settings: const RouteSettings(name: '/my_page/review'),
             builder: (_) => const ReviewScreen(),
+          );
+        }
+
+        //모임 후기 작성
+        if (settings.name == '/class_review_write') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/class_review_write'),
+            builder: (_) => const ClassReviewWriteScreen(),
+          );
+        }
+
+        //만남 후기 작성
+        if (settings.name == '/meet_review_write') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/meet_review_write'),
+            builder: (_) => const MeetReviewWriteScreen(),
+          );
+        }
+
+        //모임 후기 상세
+        if (settings.name == '/class_review_detail') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/class_review_detail'),
+            builder: (_) => const ClassReviewDetailScreen(),
+          );
+        }
+
+        //만남 후기 상세
+        if (settings.name == '/meet_review_detail') {
+          return MaterialPageRoute(
+            settings: const RouteSettings(name: '/my_page/meet_review_detail'),
+            builder: (_) => const MeetReviewDetailScreen(),
           );
         }
 
