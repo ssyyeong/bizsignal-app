@@ -2,7 +2,7 @@ class ServerSettings {
   Map? config;
 
   ServerSettings(String env) {
-    if (env == 'development') {
+    if (env == 'production') {
       config = {
         'apiUrl': 'http://15.164.163.169:4021',
         // 'apiUrl': 'localhost:4021',
@@ -13,4 +13,4 @@ class ServerSettings {
   }
 }
 
-var serverSettings = ServerSettings('d');
+var serverSettings = ServerSettings('development');
